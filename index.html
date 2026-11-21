@@ -45,6 +45,7 @@ try { const t = new URLSearchParams(location.search).get("theme") || localStorag
   --prior: #8f99ab;
   --measured: #c9b0ff;
   --assumed: #e9c47c;
+  --magnetic: #6fcfbf; /* the Sensing World's Magnetic kind: its own hue, apart from Acoustic's gold (accent) */
   --glow: #12305e;
   --fill: #1c293d;   /* the inside of a filled mark in a window */
   --none: #34425a;   /* no value: a map's cell with no reading */
@@ -79,6 +80,7 @@ try { const t = new URLSearchParams(location.search).get("theme") || localStorag
   --prior: #59667c;
   --measured: #6a3cc4;
   --assumed: #8a5a00;
+  --magnetic: #0e6f66;
   --glow: #dce6fb;
   --fill: #e6e0d3;
   --none: #bdb6a6;
@@ -997,7 +999,7 @@ body.nobar #dots { opacity: 0; pointer-events: none; }
 .slide[data-kind="world"] .wrel { position: relative; display: grid; gap: 7px; margin-top: 2px; }
 /* the papers with the same use, as a small graph out of the knowledge graph: the use in the middle, device-free papers on the
    left, device-based on the right; a paper's colour is its modality (as in the Sensing Universe); dashed: the graph's citations */
-.slide[data-kind="world"] { --mod-Acoustic: var(--accent); --mod-RF: var(--second); --mod-Optical: var(--interf); --mod-Electric: var(--measured); --mod-Magnetic: var(--assumed); --mod-Mechanical: var(--prior); }
+.slide[data-kind="world"] { --mod-Acoustic: var(--accent); --mod-RF: var(--second); --mod-Optical: var(--interf); --mod-Electric: var(--measured); --mod-Magnetic: var(--magnetic); --mod-Mechanical: var(--prior); }
 .slide[data-kind="world"] .wkg { position: relative; width: 600px; margin-top: 6px; }
 .slide[data-kind="world"] .wkg::before { content: ""; position: absolute; left: 300px; top: 38px; bottom: 0; border-left: 1.5px dashed var(--line-strong); }
 .slide[data-kind="world"] .wzone { position: absolute; top: 0; display: flex; align-items: center; gap: 9px; font: 500 16px/1 var(--font); color: var(--ink-3); }

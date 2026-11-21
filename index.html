@@ -14997,7 +14997,7 @@ pre.fbpre { background: rgba(128,128,128,.08); border-radius: 8px; padding: 10px
   }
 })();
 // The authors' check (alpha.82; the owner, 2026-11-21: “每一页结束后要选分数”). A reader who picks “Paper authors” on
-// the first page (or opens the page with ?author=1) is asked, at the end of each page (→ after its last step), two
+// the first page in this visit (or opens the page with ?author=1) is asked, at the end of each page (→ after its last step), two
 // scores from 1 to 5: Accurate (does the page say what the paper says?) and Quality (is it clear and well made?).
 // The next page waits until both are given (no skipping; the owner, 2026-11-21: “能不能不要跳过”). A pill at the bottom left gives the card at
 // any time. The scores are kept in the browser (by the site, the reader's name and the page's id). Not in the kit's own
@@ -15019,7 +15019,16 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   if (typeof document === "undefined") return;
   const q0 = new URLSearchParams(location.search), forced = q0.get("author") === "1";
   const tool = navigator.webdriver && !forced; // a tool's browser picks no kind of reader for the scores
-  const on = () => forced || (!tool && typeof rdPick !== "undefined" && rdPick === "authors");
+  // on once the reader picks “Paper authors” on the first page in this visit (the owner, 2026-11-21: “得在选定了paper
+  // author选项之后才出来，而不是一开始就出来”): a pick kept from an earlier visit does not start it; the visit
+  // remembers it (sessionStorage), so a reload goes on
+  const PICKED = "s2s-authors-picked";
+  let picked = false; try { picked = sessionStorage.getItem(PICKED) === "1"; } catch (e) {}
+  const on = () => forced || (!tool && picked && typeof rdPick !== "undefined" && rdPick === "authors");
+  document.addEventListener("click", (e) => {
+    const c = e.target.closest && e.target.closest(".gwho [data-reader]"); if (!c) return;
+    setTimeout(() => { picked = typeof rdPick !== "undefined" && rdPick === "authors"; try { if (picked) sessionStorage.setItem(PICKED, "1"); else sessionStorage.removeItem(PICKED); } catch (e2) {} paint(); }, 0);
+  }, true);
   const site = s2sSite(), title = s2sWhere().siteTitle || site;
   const KEY = () => "s2s-author:" + site + ":" + s2sUser(); // by reader: another name at the same machine starts afresh
   let scores = {}, signer = "";

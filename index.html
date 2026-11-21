@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>VECTOR · temperature fields from sound</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' gradientUnits='userSpaceOnUse' x1='14' y1='10' x2='50' y2='54'%3E%3Cstop offset='0' stop-color='#d9f272'/%3E%3Cstop offset='.38' stop-color='#6b98ff'/%3E%3Cstop offset='.68' stop-color='#c7a2ff'/%3E%3Cstop offset='1' stop-color='#ff8a5b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='#0d0f13'/%3E%3Cpath d='M44 21C44 9.5 20 9.5 20 22C20 34 44 30 44 42C44 54.5 20 54.5 20 43' fill='none' stroke='url%28#g%29' stroke-width='8.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <meta name="claude:viewport-fit-sides" content="cover">
 <script>
 // the theme before the first paint: ?theme=light|dark, else the one last picked
@@ -14653,7 +14654,8 @@ const s2sUser = () => s2sUserName;
   if (typeof document === "undefined") return;
   const q = new URLSearchParams(location.search), given = (q.get("user") || "").trim();
   // another reader than the last: no kind of reader picked yet, every guide to see again
-  const newReader = () => { try { if (typeof rdSet === "function") rdSet(""); } catch (e) {} try { if (typeof tourSeen !== "undefined") { tourSeen = {}; localStorage.removeItem(TOUR_KEY); } } catch (e) {} };
+  // (a kind given in the address, ?reader=<kind>, is the new reader's: kept)
+  const newReader = () => { try { if (typeof rdSet === "function" && !q.get("reader")) rdSet(""); } catch (e) {} try { if (typeof tourSeen !== "undefined") { tourSeen = {}; localStorage.removeItem(TOUR_KEY); } } catch (e) {} };
   try { const before = localStorage.getItem("s2s-user") || ""; s2sUserName = given || before; if (given) { localStorage.setItem("s2s-user", given); if (before && before !== given) newReader(); } } catch (e) { s2sUserName = given; }
   const asked = (() => { try { return !!sessionStorage.getItem("s2s-user-asked"); } catch (e) { return false; } })();
   if (given || asked || q.get("feedback") === "0" || (navigator.webdriver && !["feedback", "survey", "author"].some((k) => q.get(k) === "1"))) return;
@@ -15578,7 +15580,10 @@ const SURVEY = [
     if (allOpened(litPages) && LIT.some(want)) return chain(LIT, atTable);
     if (allOpened(simPages) && want("explore")) return chain(["explore"]);
   };
-  const finalKeys = () => ["intro", "sim", "universe", "world", "explore"].filter((k) => seen.has(k)).concat(["inspire", "overall"]);
+  // the last page (the owner, 2026-11-21: “这个兜底也是对的 … 我好像12都没做”): every set not answered yet, whether or not
+  // its part was met on this visit (a reload forgets that), with Research Inspiration and Overall, in one card
+  const ALL = ["intro", "sim", "universe", "world", "explore"];
+  const finalKeys = () => ALL.concat(END);
   // → at the end of a part: its questions first
   const fwd1 = forward;
   // the page that asks who the reader is: the pages after it wait for a kind picked (the owner, 2026-11-21: “即使没有选定，
@@ -15607,7 +15612,7 @@ const SURVEY = [
   };
   // the reader says they are done exploring (the table's last question, js/table.js): Exploration first
   // with the Sensing Universe's and the Sensing World's, those the reader opened
-  const atEnd = () => [...LIT.filter((k) => seen.has(k)), ...(seen.has("explore") ? ["explore"] : []), ...END];
+  const atEnd = () => ["intro", "sim", ...LIT, "explore", ...END]; // every set not answered yet (chain keeps those wanted)
   for (const b of document.querySelectorAll('[data-end="done"]')) b.addEventListener("click", (e) => { if (open || !atEnd().some(want)) return; e.stopImmediatePropagation(); e.preventDefault(); chain(atEnd(), () => b.click()); }, true);
   // the last page: the last questions, a moment after it opens
   let lastT = 0;

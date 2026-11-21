@@ -1,0 +1,239 @@
+{
+  "from": {
+    "file": "/tmp/sw-site-gYq94L/page/index.html",
+    "bytes": 19223568,
+    "sha256": "c12874a113babe64c407c83615b6eb731297a49b018cf84ac96899ff411a633c"
+  },
+  "page": {
+    "path": "index.html",
+    "bytes": 1700343,
+    "sha256": "0d9e7b08c3a282b8b5576c221db5cd9f9d090f9272e4f7846393be784ebf1ad7"
+  },
+  "library": "/nfs/turbo/coe-kesuniot1/senseweaver/library/2026-11-12",
+  "kb": "/nfs/turbo/coe-kesuniot1/senseweaver/trials/magx-a60-2026-11-17/kb/kb.json",
+  "files": [
+    {
+      "path": "library/P02.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "P02",
+      "glb": {
+        "bytes": 234388,
+        "sha256": "6f459dea1a2711c218d1271a593c03a1c3272ef3a7e07e6d6d4e70ce0cdae002"
+      },
+      "library": "lod1.glb",
+      "bytes": 312520,
+      "sha256": "e099046c96e8031bd39bbab9700d38102b287e496442ca9dd6e9fd1be384a670"
+    },
+    {
+      "path": "library/S3D-respeaker_v2.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "S3D-respeaker_v2",
+      "glb": {
+        "bytes": 16012,
+        "sha256": "1b62d689bdb4bd604936468545ec4d91f653c9536660b8bbc43c9557dc8cbdfc"
+      },
+      "library": "model.glb",
+      "bytes": 21352,
+      "sha256": "050bd64b9210b0e39ba60341600e885bc47d42263627104e3ec0d2003072178a"
+    },
+    {
+      "path": "library/A26.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "A26",
+      "glb": {
+        "bytes": 313636,
+        "sha256": "9894f28aa264b9193c0316f391e96ed12f1f90deb9d8869e6f7e7275478769c2"
+      },
+      "library": "model.glb",
+      "bytes": 418184,
+      "sha256": "eef744eac23e495b88d39dc166faf26904d0587c44d4afe0c6ce11529ec169a3"
+    },
+    {
+      "path": "library/OBJ-arduino_uno_2.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "OBJ-arduino_uno_2",
+      "glb": {
+        "bytes": 63944,
+        "sha256": "0813bb0d8f7a25db562d04b7ffb2faa081a768fe44fb60d344fad17f9afe01e2"
+      },
+      "library": "model.glb",
+      "bytes": 85260,
+      "sha256": "8e8a2d1b0de928604029e4bb24b0beb123a4bf35066a8eafe6a9166e947ae904"
+    },
+    {
+      "path": "library/OBJ-tesla_model_3.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "OBJ-tesla_model_3",
+      "glb": {
+        "bytes": 411128,
+        "sha256": "dffea795e4ceedf78152e987d859d142efaf1c7a862b2b9384922fb95f14c7f7"
+      },
+      "library": "lod1.glb",
+      "bytes": 548172,
+      "sha256": "cc26320dc85813ddc5fe5f9afa0e9c83c87230a92e4059f66d4d7ef604500640"
+    },
+    {
+      "path": "library/S3D-adxl345_breakout.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "S3D-adxl345_breakout",
+      "glb": {
+        "bytes": 5648,
+        "sha256": "7ac0b73a61a9d0bb2ef02014a08f2360fb85ad1e38c56847a0abf66e212605a7"
+      },
+      "library": "model.glb",
+      "bytes": 7532,
+      "sha256": "f71fdb8c3e437fd9b73f66c37bca6980af76c676e3bd0bc3d872bc1a0fe5918a"
+    },
+    {
+      "path": "library/OBJ-flir_e5.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "OBJ-flir_e5",
+      "glb": {
+        "bytes": 147600,
+        "sha256": "60b5b053fbec5cf16a5d5a76df411d7a1aaed05c16b55fb9394dd5b001c6e393"
+      },
+      "library": "model.glb",
+      "bytes": 196800,
+      "sha256": "86d1e97f9f114ce54da8d20050dcdf5d9ebbb60f8465455e0ff015d32b2e4da1"
+    },
+    {
+      "path": "media/apps.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "apps",
+      "bytes": 3102764,
+      "sha256": "68af2eca2e965ab0cf080a497a27bd0ff84a00c07d21ecfeb0c3c24c23a91cc3"
+    },
+    {
+      "path": "media/setup.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "setup",
+      "bytes": 3703115,
+      "sha256": "b0efea11f4ccef8decdcfb9f6a8cd87c93021db77b273378d67b06c3e4300eb6"
+    },
+    {
+      "path": "media/cars.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "cars",
+      "bytes": 1677338,
+      "sha256": "5bebffe0640cd4fa82247ca93af44c384cbde13f9794181e4aa5e82935dc2f15"
+    },
+    {
+      "path": "media/fast.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "fast",
+      "bytes": 2276064,
+      "sha256": "50656d82e2a5a3f3e6db1e886d490007a5bbd580341a3e0252b6e6c927dfc8c8"
+    },
+    {
+      "path": "media/fig-10.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-10",
+      "bytes": 12910,
+      "sha256": "932ae90fe7a5dae88f69600da2da3c3f9f7c35cc30d3ebf3fb3d653e48a565d1"
+    },
+    {
+      "path": "media/fig-11.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-11",
+      "bytes": 32743,
+      "sha256": "e411096d142e5a6c5d3a0a84fe79fc6c96db67dc4270fb0e9ae38f7fb73fd982"
+    },
+    {
+      "path": "media/fig-12.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-12",
+      "bytes": 99798,
+      "sha256": "bc6a5cc27fe53514fe616961b379777b0cb903cec13de89cbb07876a9334203d"
+    },
+    {
+      "path": "media/fig-14.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-14",
+      "bytes": 50072,
+      "sha256": "9dfb010ec483cf4c17b6f386b73172431c999b2dc4d7b20edd2e20ee643530a6"
+    },
+    {
+      "path": "media/fig-19.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-19",
+      "bytes": 51452,
+      "sha256": "1a3771ea4e075722c2382969a0c3766f65db1308d0f237fe6f6bb2504d500ac1"
+    },
+    {
+      "path": "media/fig-3.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-3",
+      "bytes": 59167,
+      "sha256": "d65a7ac92718949e6e6c0693ddf217c03e804dfb99ed84954bd2f5ca574c23ea"
+    },
+    {
+      "path": "media/fig-7.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-7",
+      "bytes": 209461,
+      "sha256": "ca13a2c5dff77f5218839783e601e7f19147605ed11ea3e3fe0d35d55f56fcc3"
+    },
+    {
+      "path": "kg/exp-kg.json",
+      "type": "application/json",
+      "kind": "kg",
+      "id": "exp-kg",
+      "kb": true,
+      "bytes": 900788,
+      "sha256": "84a373b399f7c68ad7a26da54f79b7f449ee080070f75d431de8553d886af1cb"
+    },
+    {
+      "path": "world/vector-car.glb.js",
+      "type": "text/javascript",
+      "kind": "world",
+      "bytes": 1722915,
+      "sha256": "2141ef690f061e22fa97a70e60e68696aed14b8f9cf87e8cd919e2a17bc704a1"
+    },
+    {
+      "path": "world/vector-classroom.glb.js",
+      "type": "text/javascript",
+      "kind": "world",
+      "bytes": 2421823,
+      "sha256": "aa4991cea964cde357868f7222a39bb6e314a33a865bc3ec69116321536a0993"
+    },
+    {
+      "path": "world/vector-desk.glb.js",
+      "type": "text/javascript",
+      "kind": "world",
+      "bytes": 3233867,
+      "sha256": "3c330d5eca2060484cda6b31f52a23ac461140ac38ffd88ea7e7c47f7dd5cd3c"
+    },
+    {
+      "path": "world/vector-kitchen.glb.js",
+      "type": "text/javascript",
+      "kind": "world",
+      "bytes": 2222479,
+      "sha256": "0642a47e43bff2ea0bea4d83cbf6aa54e25aed94facd23b63048acc4c2bd86bf"
+    },
+    {
+      "path": "about/assets.png",
+      "type": "image/png",
+      "kind": "about",
+      "bytes": 75841,
+      "sha256": "ca4fc53ec144c60d846275931cdf5151910f46423818372ae8da8b1de1587bf0"
+    }
+  ]
+}

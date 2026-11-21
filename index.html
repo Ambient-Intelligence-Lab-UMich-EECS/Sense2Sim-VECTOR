@@ -15389,6 +15389,7 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
 // (N/A counts in no average), and a few words; the next page waits until every rating is given. A set already
 // answered is not asked again (kept in the browser). Each set is sent as soon as it is answered to the lab's
 // collection (FEEDBACK_URL, js/feedback.js; tools/feedback/Code.gs, the sheet's tab “survey”, one row for each answer).
+// The page that asks who the reader is lets no one past it before a kind is picked.
 // A simulation without a part (no Sensing Universe page, say) does not ask about it. ?survey=0 turns it off; the
 // kit's own browsers (navigator.webdriver) do not see it unless the address asks, ?survey=1.
 const SURVEY = [
@@ -15527,9 +15528,20 @@ const SURVEY = [
   const finalKeys = () => ["intro", "sim", "universe", "world", "explore"].filter((k) => seen.has(k)).concat(["inspire", "overall"]);
   // → at the end of a part: its questions first
   const fwd1 = forward;
+  // the page that asks who the reader is: the pages after it wait for a kind picked (the owner, 2026-11-21: “即使没有选定，
+  // 也能往下走”): its question is shown again, and nothing goes on (the questions differ by the kind)
+  const askAt = slides.findIndex((x) => x.querySelector(".goal.pick .gwho [data-reader]"));
+  const unpicked = () => askAt >= 0 && cur === askAt && !(typeof rdPick !== "undefined" && rdPick);
+  const nudge = () => { const q = slides[askAt].querySelector(".goal.pick .gask"); if (!q) return; q.classList.remove("svnudge"); void q.offsetWidth; q.classList.add("svnudge"); };
+  const ncss = document.createElement("style");
+  ncss.textContent = `.goal .gask.svnudge { animation: svnudge .6s cubic-bezier(.36,.07,.19,.97) 2; box-shadow: 0 0 0 3px #ff8a5b, 0 0 24px rgba(255,138,91,.6) !important; }
+@keyframes svnudge { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); } }
+@media (prefers-reduced-motion: reduce) { .goal .gask.svnudge { animation: none; } }`;
+  document.head.append(ncss);
   forward = function () {
     const s = slides[cur];
     if (open) return;
+    if (unpicked()) return nudge();
     if (typeof AU_BLOCKS === "function" && AU_BLOCKS()) return fwd1(); // the author's scores of this page come first (js/author.js)
     if (step >= stepsOf(s) && !(typeof heldClip === "function" && heldClip(s)) && !popOpen() && !endOpen() && !(typeof rdAsking === "function" && rdAsking())) {
       const tabled = slides.some((x) => x.dataset.kind === "table");
@@ -15547,7 +15559,7 @@ const SURVEY = [
   // the last page: the last questions, a moment after it opens
   let lastT = 0;
   const go1 = go;
-  go = function (i, s) { go1(i, s); const p = partOf(slides[cur]); if (p) seen.add(p); clearTimeout(lastT); if (cur === slides.length - 1) lastT = setTimeout(() => { if (cur === slides.length - 1 && !open) chain(finalKeys(), () => S2S_REMIND()); }, 3000); };
+  go = function (i, s) { if (unpicked() && i > cur) return nudge(); go1(i, s); const p = partOf(slides[cur]); if (p) seen.add(p); clearTimeout(lastT); if (cur === slides.length - 1) lastT = setTimeout(() => { if (cur === slides.length - 1 && !open) chain(finalKeys(), () => S2S_REMIND()); }, 3000); };
   { const p = partOf(slides[cur]); if (p) seen.add(p); }
 })();
 </script>

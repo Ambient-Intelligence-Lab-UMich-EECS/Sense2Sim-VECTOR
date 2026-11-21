@@ -14738,9 +14738,22 @@ let S2S_SURVEY = false;     // the user study's questions are on (js/survey.js):
 .fbbtn.fbdanger { color: #a33a2a; } .fbbtn:disabled { opacity: .6; cursor: default; }
 .fbbtn:focus-visible, #fbta:focus-visible { outline: 2px solid #2f6fb3; outline-offset: 2px; }
 .fbrow { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
-#fbsel { position: fixed; inset: 0; z-index: 58; cursor: crosshair; background: rgba(20,24,30,.16); touch-action: none; }
-#fbhint { position: fixed; left: 50%; top: max(12px, env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 61; background: #1d2129; color: #f3eee5; font: 16px system-ui, sans-serif; padding: 6px 12px; border-radius: 999px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; max-width: 92vw; }
-#fbhint .fbbtn { padding: 2px 9px; color: #f3eee5; border-color: rgba(255,255,255,.35); }
+/* the box mode, seen at once (the owner, 2026-11-21: “不够显眼 … 在外面的矩形框可以做一下动画”): the window framed by the S's
+   colours turning round it, and the line that says what to do large, in the S's colours, at the top */
+@property --fbang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+#fbsel { position: fixed; inset: 0; z-index: 58; cursor: crosshair; background: rgba(20,24,30,.18); touch-action: none; }
+#fbsel::before { content: ""; position: absolute; inset: 0; padding: 6px; pointer-events: none; background: conic-gradient(from var(--fbang), #d9f272, #6b98ff, #c7a2ff, #ff8a5b, #d9f272);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: fbturn 3.2s linear infinite; filter: drop-shadow(0 0 10px rgba(199,162,255,.8)); }
+#fbsel::after { content: ""; position: absolute; inset: 6px; pointer-events: none; box-shadow: inset 0 0 40px rgba(107,152,255,.35); animation: fbglow 1.8s ease-in-out infinite alternate; }
+@keyframes fbturn { to { --fbang: 360deg; } }
+@keyframes fbglow { from { opacity: .35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #fbsel::before, #fbsel::after { animation: none; } }
+#fbhint { position: fixed; left: 50%; top: max(18px, env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 61; color: #fffdf8; font: 600 19px/1.35 system-ui, sans-serif; padding: 12px 22px; border-radius: 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; max-width: min(1100px, 94vw); text-align: center;
+  background: linear-gradient(#1d2129, #1d2129) padding-box, linear-gradient(110deg, #d9f272, #6b98ff, #c7a2ff, #ff8a5b) border-box; border: 3px solid transparent; box-shadow: 0 12px 36px rgba(0,0,0,.45), 0 0 28px rgba(199,162,255,.45); }
+#fbhint .fbbtn { font: 600 17px system-ui, sans-serif; padding: 6px 14px; color: #fffdf8; border-color: rgba(255,255,255,.45); }
+#fbhint > span { white-space: nowrap; } /* the line whole, its buttons after it or below it */
+#fbhint .fbbtn[data-k="done"] { background: #fffdf8; color: #1d2129; border-color: #fffdf8; }
 .fbbox { position: fixed; z-index: 59; border: 2px solid #2f6fb3; background: rgba(47,111,179,.14); border-radius: 4px; pointer-events: none; }
 .fbbox span { position: absolute; left: -2px; top: -22px; background: #2f6fb3; color: #fff; font: 600 14px system-ui, sans-serif; padding: 1px 7px; border-radius: 4px 4px 4px 0; }
 .fbnote { width: min(400px, 88vw); padding: 10px; display: grid; gap: 8px; }
@@ -14842,7 +14855,7 @@ pre.fbpre { background: rgba(128,128,128,.08); border-radius: 8px; padding: 10px
     closeNote(); selecting = true; loadH2C().catch(() => {}); // loaded now, so a note's picture is taken the moment it is saved
     const sel = document.createElement("div"); sel.id = "fbsel"; document.body.append(sel);
     const h = document.createElement("div"); h.id = "fbhint";
-    h.innerHTML = `Drag a box over what you want to talk about, as many as you like, or <button class="fbbtn" type="button" data-k="whole">write about the whole page</button><button class="fbbtn" type="button" data-k="done">Done</button>${returnTo === "summary" ? `<button class="fbbtn" type="button" data-k="back">Back to my notes</button>` : ""}`;
+    h.innerHTML = `<span>✎ Drag a box over what you want to talk about, as many as you like, or</span> <button class="fbbtn" type="button" data-k="whole">write about the whole page</button><button class="fbbtn" type="button" data-k="done">Done</button>${returnTo === "summary" ? `<button class="fbbtn" type="button" data-k="back">Back to my notes</button>` : ""}`;
     document.body.append(h);
     h.querySelector('[data-k="whole"]').onclick = () => openNote(null);
     h.querySelector('[data-k="done"]').onclick = () => stopSelect();
@@ -15091,7 +15104,14 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
 .aufield input { font: 18px system-ui, sans-serif; color: inherit; background: rgba(128,128,128,.08); border: 1px solid rgba(128,128,128,.35); border-radius: 8px; padding: 6px 8px; }`;
   const st = document.createElement("style"); st.textContent = css; document.head.append(st);
   const pages = () => slides.map((s, i) => ({ i, id: s.id, name: s.dataset.name || s.id, lvl: levelOf(s) }));
-  const rated = () => pages().filter((p) => scores[p.id] && scores[p.id].a && scores[p.id].q).length;
+  // the pages an author scores: those with the paper's content, not the opening, the title, a part's divider or start,
+  // the table of the explorations, the end (the owner, 2026-11-21: “打分的页面是要有实际内容的页面”)
+  const NOSCORE = new Set(["about", "start", "title", "divider", "overview", "table", "all", "open", "contents"]);
+  const scored = (s) => !NOSCORE.has(s.dataset.kind || "");
+  const allPages = pages;
+  const rateable = () => allPages().filter((p) => scored(slides[p.i]));
+  const here = () => scored(slides[cur]);
+  const rated = () => rateable().filter((p) => scores[p.id] && scores[p.id].a && scores[p.id].q).length;
   const avg = (k, src = scores) => { const v = Object.values(src).map((s) => s && s[k]).filter((x) => x && x !== "na") /* N/A counts in no average */; return v.length ? v.reduce((x, y) => x + y, 0) / v.length : 0; };
   // ---------------------------------------------------------------- the medal's drawing
   const ACC = ["#0a4a28", "#19a85a", "#a6f7c4"], QUAL = ["#112761", "#2f6ee8", "#bcd5ff"], MARK = "#ff5a0a";
@@ -15228,7 +15248,9 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   const pill = document.createElement("button"); pill.type = "button"; pill.className = "aupill"; pill.hidden = true; document.body.append(pill);
   const seal = document.createElement("button"); seal.type = "button"; seal.className = "auseal"; seal.hidden = true; seal.setAttribute("aria-label", "Author certificate"); document.body.append(seal);
   let card = null, resume = null;
-  const pid = () => slides[cur].id, done = (id = pid()) => !!(scores[id] && scores[id].a && scores[id].q);
+  const pid = () => slides[cur].id, done = (id = pid()) => { const s = slides.find((x) => x.id === id); return !(s && scored(s)) || !!(scores[id] && scores[id].a && scores[id].q); };
+  // a page not scored: the pill and the medal open the card of the next page to score (or the first not scored yet)
+  const nextToScore = () => { const R = rateable(), a = R.find((p) => p.i >= cur && !done(p.id)) || R.find((p) => !done(p.id)) || R[0]; return a ? a.i : -1; };
   // the first time an author comes: what the scores are, and how it goes (the owner, 2026-11-21: “第一页应该有一个解释”)
   let introOpen = false;
   const introKey = () => "s2s-author-intro:" + s2sUser(), introSeen = () => { try { return !!localStorage.getItem(introKey()); } catch (e) { return introShown; } };
@@ -15255,7 +15277,7 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   function paint() {
     // (not while the name is asked, js/feedback.js: the card comes once it is given, "s2s-user")
     if (on() && !introOpen && !introShown && !introSeen() && !document.getElementById("s2suser")) setTimeout(() => { if (on() && !introSeen() && !document.getElementById("s2suser")) intro(); }, 0);
-    const me = on(), cert = AUTHOR_CERT && AUTHOR_CERT.scores ? AUTHOR_CERT : null, n = rated(), N = slides.length;
+    const me = on(), cert = AUTHOR_CERT && AUTHOR_CERT.scores ? AUTHOR_CERT : null, n = rated(), N = rateable().length;
     pill.hidden = !me || !!card; pill.textContent = `Author check · ${n} / ${N}`;
     const src = me ? scores : cert ? cert.scores : null; // an author sees the medal from the start, empty until the first scores
     seal.hidden = !src;
@@ -15264,21 +15286,22 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   }
   function openCard(then) {
     closeCard(); resume = then || null;
-    const id = pid(), s = scores[id] || {}, n = rated(), N = slides.length, P = pages();
+    if (!here()) { const i = nextToScore(); if (i < 0) return; closeCard(); go(i, 0); }
+    const id = pid(), s = scores[id] || {}, n = rated(), R = rateable(), N = R.length, P = allPages(), k = R.findIndex((p) => p.i === cur) + 1, lastOne = R.length && R[R.length - 1].i === cur;
     card = document.createElement("div"); card.className = "aucard"; card.setAttribute("role", "dialog"); card.setAttribute("aria-label", "Author check");
     const scale = (k) => ["na", 1, 2, 3, 4, 5].map((v) => `<button type="button" data-k="${k}" data-v="${v}" class="${s[k] === v ? "auon" : ""}${v === "na" ? " auna" : ""}" aria-label="${k === "a" ? "Accurate" : "Quality"} ${v === "na" ? "not applicable" : v}" aria-pressed="${s[k] === v}">${v === "na" ? "N/A" : v}</button>`).join("");
-    card.innerHTML = `<header><b>Author check</b><span>Page ${cur + 1} / ${N} · ${esc(P[cur].name)}</span><button class="auhow" type="button" data-x="how">How it works</button></header><div class="auin">
+    card.innerHTML = `<header><b>Author check</b><span>Page ${k} / ${N} · ${esc(P[cur].name)}</span><button class="auhow" type="button" data-x="how">How it works</button></header><div class="auin">
       <div class="aum aua"><div class="aulab"><b>Accurate</b><span>Does this page say what the paper says?</span></div><div class="ausc">${scale("a")}</div><div class="auends"><span>1 · wrong</span><span>5 · exactly right</span></div></div>
       <div class="aum auq"><div class="aulab"><b>Quality</b><span>Is it clear and well made?</span></div><div class="ausc">${scale("q")}</div><div class="auends"><span>1 · poor</span><span>5 · excellent</span></div></div>
       <div class="aufoot"><div class="auprog"><div class="aubar"><i style="width:${n / N * 100}%"></i></div><span>${n} of ${N} pages rated</span></div>
-      ${then ? `<button class="aubtn auprimary" type="button" data-x="next" ${done(id) ? "" : "disabled"}>${cur === N - 1 ? "Finish" : "Next page →"}</button>` : ""}</div></div>`;
+      ${then ? `<button class="aubtn auprimary" type="button" data-x="next" ${done(id) ? "" : "disabled"}>${lastOne ? "Finish" : "Next page →"}</button>` : ""}</div></div>`;
     document.body.append(card); paint();
     card.querySelectorAll(".ausc button").forEach((b) => b.onclick = (e) => { e.stopPropagation(); const all0 = rated() === N; scores[id] = Object.assign({}, scores[id], { [b.dataset.k]: b.dataset.v === "na" ? "na" : +b.dataset.v, at: new Date().toISOString() }); keep();
       if (done(id)) s2sSend(post("page", [P[cur]])); // as given, to the collection
       if (!all0 && rated() === N) { closeCard(); openCert(); return; } // every page rated: the certificate opens by itself
       const r = resume; openCard(r); });
     card.querySelector('[data-x="how"]').onclick = (e) => { e.stopPropagation(); intro(); };
-    const nx = card.querySelector('[data-x="next"]'); if (nx) nx.onclick = (e) => { e.stopPropagation(); const r = resume; closeCard(); if (cur === N - 1 && rated() === N) openCert(); else if (r) r(); };
+    const nx = card.querySelector('[data-x="next"]'); if (nx) nx.onclick = (e) => { e.stopPropagation(); const r = resume; closeCard(); if (lastOne && rated() === N) openCert(); else if (r) r(); };
     card.addEventListener("click", (e) => e.stopPropagation()); card.addEventListener("pointerdown", (e) => e.stopPropagation());
   }
   function closeCard() { if (card) card.remove(); card = null; resume = null; paint(); }
@@ -15286,17 +15309,19 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   addEventListener("pointermove", sealWake, { passive: true }); sealWake();
   pill.onclick = (e) => { e.stopPropagation(); openCard(null); };
   // the medal: the certificate once every page is rated (or the authors' scores came with the simulation); before, this page's card
-  seal.onclick = (e) => { e.stopPropagation(); if (!on() || rated() === slides.length) openCert(); else if (card) closeCard(); else openCard(null); };
+  seal.onclick = (e) => { e.stopPropagation(); if (!on() || rated() === rateable().length) openCert(); else if (card) closeCard(); else openCard(null); };
   // a press outside the card closes it, and only that: the page does not go on
   for (const ev of ["pointerdown", "mousedown", "click"]) document.addEventListener(ev, (e) => {
     if (!card || introOpen || card.contains(e.target) || seal.contains(e.target)) return;
     e.stopPropagation(); e.preventDefault(); if (ev === "click") closeCard();
   }, true);
   // → after a page's last step: the card first, when the page has no scores yet
-  AU_BLOCKS = () => on() && step >= stepsOf(slides[cur]) && !done();
+  // (a page's clip held at its set-up plays first: the page ends after it, js/deck.js heldClip)
+  const held = () => typeof heldClip === "function" && !!heldClip(slides[cur]);
+  AU_BLOCKS = () => on() && step >= stepsOf(slides[cur]) && !held() && !done();
   const fwd0 = forward;
   forward = function () {
-    if (on() && step >= stepsOf(slides[cur]) && !popOpen() && !endOpen() && !(typeof rdAsking === "function" && rdAsking())) {
+    if (on() && step >= stepsOf(slides[cur]) && !held() && !popOpen() && !endOpen() && !(typeof rdAsking === "function" && rdAsking())) {
       if (card && resume) { if (done()) { const r = resume; closeCard(); r(); } return; }
       if (!done()) { openCard(() => forward()); return; } // once scored, → again: the part's questions may come next (js/survey.js)
     }
@@ -15319,7 +15344,7 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   function closeCert() { if (M) M.stop(); M = null; if (sheet) sheet.remove(); sheet = null; paint(); }
   function openCert() {
     closeCert();
-    const me = on(), P = pages(), N = P.length, src = me ? scores : (AUTHOR_CERT && AUTHOR_CERT.scores) || {}, a = avg("a", src), q = avg("q", src);
+    const me = on(), P = rateable(), N = P.length, src = me ? scores : (AUTHOR_CERT && AUTHOR_CERT.scores) || {}, a = avg("a", src), q = avg("q", src);
     const n = P.filter((p) => src[p.id] && src[p.id].a && src[p.id].q).length, who = me ? signer || s2sUser() || "A paper author" : (AUTHOR_CERT && AUTHOR_CERT.who) || "The paper's authors";
     const date = me ? new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : (AUTHOR_CERT && AUTHOR_CERT.date) || "";
     const lv = [...new Set(P.map((p) => p.lvl))], cols = `grid-template-columns: repeat(${N}, minmax(10px, 1fr))`, spans = `grid-template-columns: ${lv.map((l) => P.filter((p) => p.lvl === l).length + "fr").join(" ")}`;
@@ -15342,11 +15367,11 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
     const sd = sheet.querySelector('[data-x="send"]'); if (sd) sd.onclick = () => { if (w && !signer) signer = w.value.trim(); send(sd); };
   }
   // what is posted: the pages given, each with its two scores (N/A as N/A) and when it was scored
-  const post = (mode, list) => ({ kind: "scores", mode, site, ...s2sWhere(), version: s2sKit(), user: s2sUser(), who: signer || s2sUser(), ua: navigator.userAgent, pages: slides.length, rated: rated(), avg: { a: +avg("a").toFixed(2), q: +avg("q").toFixed(2) },
+  const post = (mode, list) => ({ kind: "scores", mode, site, ...s2sWhere(), version: s2sKit(), user: s2sUser(), who: signer || s2sUser(), ua: navigator.userAgent, pages: rateable().length, rated: rated(), avg: { a: +avg("a").toFixed(2), q: +avg("q").toFixed(2) },
     scores: list.filter((p) => scores[p.id] && (scores[p.id].a || scores[p.id].q)).map((p) => ({ page: p.name, pageId: p.id, a: scores[p.id].a === "na" ? "N/A" : scores[p.id].a || "", q: scores[p.id].q === "na" ? "N/A" : scores[p.id].q || "", at: scores[p.id].at || "" })) });
   async function send(btn) {
     btn.disabled = true; btn.textContent = "Sending…";
-    const { ok, why } = await s2sPost(post("certificate", pages()));
+    const { ok, why } = await s2sPost(post("certificate", rateable()));
     btn.textContent = ok ? "Sent ✓ Thank you" : `Not sent (${why || "no answer"}): try again`; btn.disabled = ok;
   }
   // the reader picked or changed: the pill and the seal follow; another reader's name: that reader's scores
@@ -15356,9 +15381,11 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
 })();
 // The user study's questions, in the slides (alpha.82; the owner, 2026-11-21: “这个questionnaire要做进去 … 所有用户都要填”).
 // Every reader answers a short set of questions as each part of the simulation ends: the Intro (after the last page of
-// level 1), the Simulator (after the last page of level 2), the Sensing Universe and the Sensing World (as the reader
-// leaves their page), Exploration (when the reader says they are done exploring, or at the end), then Research
-// inspiration (sensing researchers only) and Overall (at the last page). Each set asks for its ratings, 1–5 or N/A
+// level 1), the Simulator (after the last page of level 2), the Sensing Universe, the Sensing World (those the reader
+// opened) and Exploration when the reader says they are done exploring (the table's “No, end here”; the owner,
+// 2026-11-21: “在这里比较合适”), then Research inspiration (sensing researchers only) and Overall at the last page.
+// The bar at the foot of the page marks where each set comes (the owner: “把questionnaire也放到下面坐标bar上，用其他颜
+// 色表示”): an orange diamond after its page, hollow until answered. Each set asks for its ratings, 1–5 or N/A
 // (N/A counts in no average), and a few words; the next page waits until every rating is given. A set already
 // answered is not asked again (kept in the browser). Each set is sent as soon as it is answered to the lab's
 // collection (FEEDBACK_URL, js/feedback.js; tools/feedback/Code.gs, the sheet's tab “survey”, one row for each answer).
@@ -15397,7 +15424,7 @@ const SURVEY = [
   // what is answered is kept by reader: another name at the same machine (a study's shared computer) is asked afresh
   const read = () => { try { return JSON.parse(localStorage.getItem(KEY()) || "{}") || {}; } catch (e) { return {}; } };
   let done = read(); addEventListener("s2s-user", () => { done = read(); seen.clear(); const p = partOf(slides[cur]); if (p) seen.add(p); });
-  const keep = () => { try { localStorage.setItem(KEY(), JSON.stringify(done)); } catch (e) {} };
+  const keep = () => { try { localStorage.setItem(KEY(), JSON.stringify(done)); } catch (e) {} marks(); };
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const css = `
 .svshade { position: fixed; inset: 0; z-index: 76; background: rgba(10,12,16,.5); }
@@ -15462,6 +15489,34 @@ const SURVEY = [
     };
     setTimeout(() => (c.querySelector(".svpick input") || c.querySelector(".svsc button")).focus(), 0);
   }
+  // where each set comes, on the bar at the foot of the page (js/deck.js, #dots): after its page, an orange diamond,
+  // hollow until answered; its sets named on pointing at it
+  const mcss = document.createElement("style");
+  mcss.textContent = `#dots .svmark { flex: none; width: 16px; height: 36px; display: grid; place-items: center; position: relative; cursor: help; }
+#dots .svmark i { width: 11px; height: 11px; transform: rotate(45deg); border: 2px solid #ff8a5b; border-radius: 2px; box-sizing: border-box; box-shadow: 0 0 8px rgba(255,138,91,.7); animation: svpulse 1.6s ease-in-out infinite alternate; }
+#dots .svmark.svdone i { background: #ff8a5b; animation: none; box-shadow: none; }
+#dots .svmark b { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 600 13px system-ui, sans-serif; color: #1a1a1a; background: #ff8a5b; padding: 4px 9px; border-radius: 6px; opacity: 0; pointer-events: none; transition: opacity .12s; }
+#dots .svmark:hover b { opacity: 1; }
+@keyframes svpulse { from { opacity: .55; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #dots .svmark i { animation: none; } }`;
+  document.head.append(mcss);
+  function marks() {
+    const bar = document.getElementById("dots"); if (!bar || typeof dotOf === "undefined") return;
+    bar.querySelectorAll(".svmark").forEach((m) => m.remove());
+    const tb = slides.findIndex((x) => x.dataset.kind === "table"), at = new Map(), put = (i, k) => { if (i >= 0 && dotOf[i]) at.set(i, [...(at.get(i) || []), k]); };
+    if (has.intro) put(lastOf("1"), "intro"); if (has.sim) put(lastOf("2"), "sim");
+    if (tb >= 0) { for (const k of ["universe", "world", "explore"]) if (has[k]) put(tb, k); }
+    else { if (has.universe) put(slides.findIndex(kinds.universe), "universe"); if (has.world) put(slides.findIndex(kinds.world), "world"); }
+    if (researcher()) put(slides.length - 1, "inspire"); put(slides.length - 1, "overall");
+    for (const [i, keys] of at) {
+      const m = document.createElement("span"), names = keys.map((k) => SURVEY.find((x) => x.key === k).title), all = keys.every((k) => done[k]);
+      m.className = "svmark" + (all ? " svdone" : ""); m.setAttribute("role", "img");
+      m.setAttribute("aria-label", `Questions: ${names.join(", ")}${all ? " (answered)" : ""}`);
+      m.innerHTML = `<i></i><b>Questions · ${esc(names.join(" · "))}${all ? " ✓" : ""}</b>`;
+      dotOf[i].after(m);
+    }
+  }
+  marks(); addEventListener("s2s-user", () => setTimeout(marks, 0)); document.addEventListener("click", (e) => { if (e.target.closest && e.target.closest(".gwho [data-reader]")) setTimeout(marks, 0); }, true);
   // sent as each set is answered (s2sSend, js/feedback.js: kept and sent again when the network failed)
   const send = (payload) => s2sSend(payload);
   S2S_SURVEY = true;
@@ -15476,8 +15531,9 @@ const SURVEY = [
     const s = slides[cur];
     if (open) return;
     if (typeof AU_BLOCKS === "function" && AU_BLOCKS()) return fwd1(); // the author's scores of this page come first (js/author.js)
-    if (step >= stepsOf(s) && !popOpen() && !endOpen() && !(typeof rdAsking === "function" && rdAsking())) {
-      const part = partOf(s), k = (part === "intro" && cur === lastOf("1")) ? "intro" : (part === "sim" && cur === lastOf("2")) ? "sim" : (part === "universe" || part === "world") ? part : "";
+    if (step >= stepsOf(s) && !(typeof heldClip === "function" && heldClip(s)) && !popOpen() && !endOpen() && !(typeof rdAsking === "function" && rdAsking())) {
+      const tabled = slides.some((x) => x.dataset.kind === "table");
+      const part = partOf(s), k = (part === "intro" && cur === lastOf("1")) ? "intro" : (part === "sim" && cur === lastOf("2")) ? "sim" : (!tabled && (part === "universe" || part === "world")) ? part : "";
       if (k && want(k)) return ask(k, () => fwd1());
       if (cur === slides.length - 1) return chain(finalKeys(), () => S2S_REMIND()); // then the notes not sent yet, if any (js/feedback.js)
       if (!slides.some((x) => x.dataset.kind === "table") && levelOf(s) === "3" && slides.slice(cur + 1).every((x) => levelOf(x) !== "3" || !partOf(x))) return chain(["explore"].filter((x) => seen.has(x)), () => fwd1());
@@ -15485,7 +15541,9 @@ const SURVEY = [
     fwd1();
   };
   // the reader says they are done exploring (the table's last question, js/table.js): Exploration first
-  for (const b of document.querySelectorAll('[data-end="done"]')) b.addEventListener("click", (e) => { if (open || !want("explore")) return; e.stopImmediatePropagation(); e.preventDefault(); seen.add("explore"); ask("explore", () => b.click()); }, true);
+  // with the Sensing Universe's and the Sensing World's, those the reader opened
+  const atEnd = () => ["universe", "world"].filter((k) => seen.has(k)).concat(["explore"]);
+  for (const b of document.querySelectorAll('[data-end="done"]')) b.addEventListener("click", (e) => { if (open || !atEnd().some(want)) return; e.stopImmediatePropagation(); e.preventDefault(); seen.add("explore"); chain(atEnd(), () => b.click()); }, true);
   // the last page: the last questions, a moment after it opens
   let lastT = 0;
   const go1 = go;

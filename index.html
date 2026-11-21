@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>VECTOR · temperature fields from sound</title>
+<!-- the Sense2Sim S in the browser's tab (the owner, 2026-11-21: “所有构建都要有S这个图标在浏览器那个栏里”) -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' gradientUnits='userSpaceOnUse' x1='14' y1='10' x2='50' y2='54'%3E%3Cstop offset='0' stop-color='#d9f272'/%3E%3Cstop offset='.38' stop-color='#6b98ff'/%3E%3Cstop offset='.68' stop-color='#c7a2ff'/%3E%3Cstop offset='1' stop-color='#ff8a5b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='#0d0f13'/%3E%3Cpath d='M44 21C44 9.5 20 9.5 20 22C20 34 44 30 44 42C44 54.5 20 54.5 20 43' fill='none' stroke='url%28#g%29' stroke-width='8.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <meta name="claude:viewport-fit-sides" content="cover">
 <script>
@@ -160,6 +161,9 @@ h2 { font-size: 60px; line-height: 1.08; }
 .lines li .n { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--line-strong); display: grid; place-items: center; font: 600 22px/1 var(--mono); color: var(--ink-3); transition: all .4s; }
 .lines li.shown { color: var(--ink-2); opacity: var(--shown); transform: none; }
 .lines li.shown .n { border-color: var(--accent); color: var(--accent); }
+/* by day a read number, the accent at the line's --shown, was 4.54:1 on the plain page, and under 4.5 over any thing
+   of the scene seen through the scrim: it takes a little of the ink, for room to spare */
+:root[data-theme="light"] :is(.lines, .guide) li.shown:not(.now) .n { color: color-mix(in srgb, var(--accent) 72%, var(--ink)); }
 .lines li.now { color: var(--ink); opacity: 1; }
 .lines li.now .n { color: var(--bg); background: var(--accent); }
 /* a guide (pages.mjs, guide): a line a click, and the lines already said stay, dim and a size smaller, above the
@@ -341,6 +345,13 @@ kbd { font: 600 22px/1 var(--mono); padding: 4px 9px; border-radius: 6px; border
 .slider { display: grid; grid-template-columns: auto 1fr 96px; align-items: center; gap: 14px; width: 100%; font-size: 21px; color: var(--ink-2); }
 .slider input { accent-color: var(--accent); width: 100%; height: 28px; margin: 0; cursor: pointer; }
 .slider output { font: 600 21px/1 var(--mono); color: var(--ink); text-align: right; }
+/* a choice among kinds: a button each (pages.mjs, names), the one chosen filled */
+.choice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; width: 100%; font-size: 21px; color: var(--ink-2); }
+.choice > span { margin-right: 4px; }
+.choice .pick { font: 600 19px/1 var(--font); padding: 8px 14px 7px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--ink); cursor: pointer; }
+.choice .pick:hover { border-color: var(--accent); }
+.choice .pick[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.choice .pick:focus-visible { outline: 3px solid var(--second); outline-offset: 3px; }
 .ros { display: grid; gap: 12px; padding: 18px 22px; border-radius: 14px; border: 1px solid var(--line); background: rgb(var(--glass) / 70%); }
 .ros .ro { grid-template-columns: 1fr auto; font-size: 21px; gap: 16px; }
 .ros .ro b { font-size: 28px; }
@@ -1214,7 +1225,7 @@ body.nobar #dots { opacity: 0; pointer-events: none; }
 .pq.inpaper:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--accent) 16%, transparent); outline: none; }
 .pq.inpaper:is(:hover, :focus-visible)::after { color: var(--accent); }
 /* a cite: a passage of the paper's named by its source only, as a link to it (template/pages.mjs, citeOf) */
-.pq.pcite::after { content: attr(data-src) " \2197"; margin-left: .35em; font-size: .6em; }
+.pq.pcite::after { content: attr(data-src) " \2197"; margin-left: .35em; font-size: max(.7em, 15px); } /* (never under 15 px, in a guide's small line too) */
 .pq.pcite:not(.inpaper)::after { content: attr(data-src); }
 /* the flight's sheet is the paper's own first page where the page holds it (js/flight.js) */
 .unipaper .pg { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 6px; }
@@ -1837,7 +1848,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     <p class="why" data-said="2"><span class="more"><span class="pq" data-src="§3.4">we combine the index of the cross-correlation peak and the phase of the peak</span><button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip"><span class="pq" data-src="§3.1">As a phase change of 2π at 19 kHz carrier is equivalent to 52.6 μs in ToF, we can use the cross-correlation result that has a resolution of 20.8 μs to determine how many 2π the phase has been changed.</span></span></span></p>
     <ol class="guide">
       <li data-step="1" data-at="lab:phase"><button type="button" class="n" aria-label="Back to step 1">1</button><span><span class="ours" title="Our words, not the paper’s">New: the carrier's phase</span></span></li>
-      <li data-step="2" data-at="panel:cir"><button type="button" class="n" aria-label="Back to step 2">2</button><span><span class="ours" title="Our words, not the paper’s">One phase turn is 52.6 µs of ToF</span></span> <span class="pq pcite" data-src="Fig. 2" data-pq="Key intermediate steps of signal processing"></span></li>
+      <li data-step="2" data-at="panel:cir"><button type="button" class="n" aria-label="Back to step 2">2</button><span><span class="ours" title="Our words, not the paper’s">One phase turn is 52.6 µs of ToF</span> <span class="pq pcite" data-src="Fig. 2" data-pq="Key intermediate steps of signal processing"></span></span></li>
       <li data-step="3" data-at="lab:recip"><button type="button" class="n" aria-label="Back to step 3">3</button><span><span class="ours" title="Our words, not the paper’s">Both phones send: their delays cancel</span></span></li>
       <li data-step="4" data-at="panel:staircase"><button type="button" class="n" aria-label="Back to step 4">4</button><span><span class="ours" title="Our words, not the paper’s">Peak and phase follow the warming room</span></span></li>
       <li data-step="5" class="turn" data-at="ctl:phase"><button type="button" class="n" aria-label="Back to step 5">5</button><span><b class="yt">Your turn</b> <span class="ours" title="Our words, not the paper’s">Phase off and on, drag the warm air</span></span></li>
@@ -1889,7 +1900,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     <ol class="guide">
       <li data-step="1" data-at="lab:dradon"><button type="button" class="n" aria-label="Back to step 1">1</button><span><span class="ours" title="Our words, not the paper’s">New: each path's ToF change from the 20 °C room</span></span></li>
       <li data-step="2" data-at="panel:tmap"><button type="button" class="n" aria-label="Back to step 2">2</button><span><span class="ours" title="Our words, not the paper’s">That change grows with the warming along the path</span></span></li>
-      <li data-step="3" data-at="panel:tmap"><button type="button" class="n" aria-label="Back to step 3">3</button><span><span class="ours" title="Our words, not the paper’s">Smoothed, spread to 360 angles, added up: the square</span></span> <span class="pq pcite" data-src="Fig. 7" data-pq="Reconstructing temperature field"></span></li>
+      <li data-step="3" data-at="panel:tmap"><button type="button" class="n" aria-label="Back to step 3">3</button><span><span class="ours" title="Our words, not the paper’s">Smoothed, spread to 360 angles, added up: the square</span> <span class="pq pcite" data-src="Fig. 7" data-pq="Reconstructing temperature field"></span></span></li>
       <li data-step="4" class="turn" data-at="ctl:dradon"><button type="button" class="n" aria-label="Back to step 4">4</button><span><b class="yt">Your turn</b> <span class="ours" title="Our words, not the paper’s">dRadon off and on, drag the hot square</span></span></li>
     </ol>
     <p class="why reveal" data-step="3" data-said="4"><span class="more"><span class="ours" title="Our words, not the paper’s">On the paper's turning platform, this rebuilt the field to about a decimeter.</span><button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip"><span class="pq" data-src="Sec. 4.4">Therefore, our ToF measurements are accurate enough to reconstruct the temperature distribution at a decimeter-level resolution.</span></span></span></p>
@@ -1935,7 +1946,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     <p class="why" data-said="2"><span class="more"><span class="pq" data-src="Sec. 5.1">different paths pass through the cells, i.e., the four seats, in different ways</span><button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip"><span class="pq" data-src="Sec. 5.2">Thus, the number of paths is much larger than the number of cells and the linear equations are often over-determined.</span></span></span></p>
     <ol class="guide">
       <li data-step="1" data-at="lab:refl"><button type="button" class="n" aria-label="Back to step 1">1</button><span><span class="ours" title="Our words, not the paper’s">New: echoes off the car's windows</span></span></li>
-      <li data-step="2" data-at="panel:cirCar"><button type="button" class="n" aria-label="Back to step 2">2</button><span><span class="ours" title="Our words, not the paper’s">Each echo is a later peak: a longer path</span></span> <span class="pq pcite" data-src="Fig. 9" data-pq="Multipath at different temperatures in the car"></span></li>
+      <li data-step="2" data-at="panel:cirCar"><button type="button" class="n" aria-label="Back to step 2">2</button><span><span class="ours" title="Our words, not the paper’s">Each echo is a later peak: a longer path</span> <span class="pq pcite" data-src="Fig. 9" data-pq="Multipath at different temperatures in the car"></span></span></li>
       <li data-step="3" data-at="panel:seats"><button type="button" class="n" aria-label="Back to step 3">3</button><span><span class="ours" title="Our words, not the paper’s">A trained model turns ToF changes into seats</span></span></li>
       <li data-step="4" class="turn" data-at="ctl:reflect"><button type="button" class="n" aria-label="Back to step 4">4</button><span><b class="yt">Your turn</b> <span class="ours" title="Our words, not the paper’s">Echoes off and on, drag the warm seat</span></span></li>
     </ol>
@@ -2382,7 +2393,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     <div class="tabs"><span data-tab="0">Noise</span><span data-tab="1">Reflector</span><span data-tab="2">Band</span><span data-tab="3">Sample rate</span><span data-tab="4">Orientation</span></div>
     <div class="only" data-only="0">
       <ol class="turns">
-        <li class="turn has wide" data-n="1" data-at="ctl:noise"><span class="n">1</span><span class="tsay"><b class="yt">Your turn</b> <span class="more">Pick another noise.<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Fig. 17's five: a quiet room, music and speech at their sound levels, a 19&nbsp;kHz tone, and another ZC signal in VECTOR's band. The model's effect of each is fitted to Fig. 17 (assumed).</span></span></span><span class="tctl controls"><label class="slider"><span>Noise</span><input type="range" data-ctl="noise" min="0" max="4" step="1" value="0"><output data-val="noise" data-fmt="{n}" data-names='["Normal, 39.4 dBA","Music, 77.6 dBA","Speech, 70.0 dBA","Tone, 19 kHz","Another ZC, 19 kHz"]'>Normal, 39.4 dBA</output></label></span></li>
+        <li class="turn has wide" data-n="1" data-at="ctl:noise"><span class="n">1</span><span class="tsay"><b class="yt">Your turn</b> <span class="more">Pick another noise.<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Fig. 17's five: a quiet room, music and speech at their sound levels, a 19&nbsp;kHz tone, and another ZC signal in VECTOR's band. The model's effect of each is fitted to Fig. 17 (assumed).</span></span></span><span class="tctl controls"><div class="choice" role="group" aria-label="Noise"><span>Noise</span><button type="button" class="pick" data-ctl="noise" data-set="0" aria-pressed="true">Normal, 39.4 dBA</button><button type="button" class="pick" data-ctl="noise" data-set="1" aria-pressed="false">Music, 77.6 dBA</button><button type="button" class="pick" data-ctl="noise" data-set="2" aria-pressed="false">Speech, 70.0 dBA</button><button type="button" class="pick" data-ctl="noise" data-set="3" aria-pressed="false">Tone, 19 kHz</button><button type="button" class="pick" data-ctl="noise" data-set="4" aria-pressed="false">Another ZC, 19 kHz</button></div></span></li>
         <li class="turn" data-n="2" data-at="cue" data-by="cue"><span class="n">2</span><span class="tsay"><b class="yt">Your turn</b> <span class="more">Drag the hot area off the path.<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Only the air the sound crosses counts: off the path, the reading falls back to the room's 22&nbsp;°C.</span></span></span></li>
       </ol>
       <button type="button" class="allctl">Show all controls</button>
@@ -2410,7 +2421,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     </div>
     <div class="only" data-only="2">
       <ol class="turns">
-        <li class="turn has wide" data-n="1" data-at="ctl:bw"><span class="n">1</span><span class="tsay"><b class="yt">Your turn</b> <span class="more">Widen the band to 6.53 kHz.<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">The plate stays where its copy is 25&nbsp;cm longer, the case Fig. 15 finds merged. A wider band makes each peak of the CIR narrower.</span></span></span><span class="tctl controls"><label class="slider"><span>Band</span><input type="range" data-ctl="bw" min="0" max="2" step="1" value="1"><output data-val="bw" data-fmt="{n}" data-names='["2 kHz","4 kHz","6.53 kHz"]'>4 kHz</output></label></span></li>
+        <li class="turn has wide" data-n="1" data-at="ctl:bw"><span class="n">1</span><span class="tsay"><b class="yt">Your turn</b> <span class="more">Widen the band to 6.53 kHz.<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">The plate stays where its copy is 25&nbsp;cm longer, the case Fig. 15 finds merged. A wider band makes each peak of the CIR narrower.</span></span></span><span class="tctl controls"><div class="choice" role="group" aria-label="Band"><span>Band</span><button type="button" class="pick" data-ctl="bw" data-set="0" aria-pressed="false">2 kHz</button><button type="button" class="pick" data-ctl="bw" data-set="1" aria-pressed="true">4 kHz</button><button type="button" class="pick" data-ctl="bw" data-set="2" aria-pressed="false">6.53 kHz</button></div></span></li>
       </ol>
       <button type="button" class="allctl">Show all controls</button>
       <div class="ros">
@@ -2422,7 +2433,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     </div>
     <div class="only" data-only="3">
       <ol class="turns">
-        <li class="turn has wide" data-n="1" data-at="ctl:fs"><span class="n">1</span><span class="tsay"><b class="yt">Your turn</b> <span class="more">Switch to 44.1 kHz.<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Many phones also record at 44.1&nbsp;kHz. The same signal played at that rate fills a band of 3.7&nbsp;kHz, and the correlation peak steps 5.7&nbsp;μs, not 5.2.</span></span></span><span class="tctl controls"><label class="slider"><span>Sampling rate</span><input type="range" data-ctl="fs" min="0" max="1" step="1" value="0"><output data-val="fs" data-fmt="{n}" data-names='["48 kHz","44.1 kHz"]'>48 kHz</output></label></span></li>
+        <li class="turn has wide" data-n="1" data-at="ctl:fs"><span class="n">1</span><span class="tsay"><b class="yt">Your turn</b> <span class="more">Switch to 44.1 kHz.<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Many phones also record at 44.1&nbsp;kHz. The same signal played at that rate fills a band of 3.7&nbsp;kHz, and the correlation peak steps 5.7&nbsp;μs, not 5.2.</span></span></span><span class="tctl controls"><div class="choice" role="group" aria-label="Sampling rate"><span>Sampling rate</span><button type="button" class="pick" data-ctl="fs" data-set="0" aria-pressed="true">48 kHz</button><button type="button" class="pick" data-ctl="fs" data-set="1" aria-pressed="false">44.1 kHz</button></div></span></li>
       </ol>
       <button type="button" class="allctl">Show all controls</button>
       <div class="ros">
@@ -4296,25 +4307,54 @@ function restingShadows(W) {
 // or "right", starting or ending there (a long label beside a part, clear of it whatever its length). A
 // label's point is on the thing it names, where the camera draws it: the readable check (tools/check.mjs)
 // judges the thing drawn there.
-const labelsEl = document.getElementById("labels"); const labelPool = [];
+// Each label keeps its own element from frame to frame, found by its key, else its words, and never flashes from
+// place to place (the owner, 2026-11-21: a "NEW" pill pinned to the nearest of several points jumped 40 px back and
+// forth as the thing moved, “这个会闪NEW这一块，改一下，并且写到kit”). A label follows its point at once, however far
+// it moves (a thing flown in, the view cut to another); only a point that leaps back, more than LABEL_LEAP px, to
+// where it was in the last LABEL_HIST frames (two points taking turns, every frame or every few: a second's) is not
+// followed: the label holds until its point has stayed put LABEL_STAY frames (longer than such points take turns),
+// then glides there, a quarter of the way a frame. A move of LABEL_LEAP px or less a frame is always followed.
+const LABEL_LEAP = 24, LABEL_GLIDE = 0.25, LABEL_STAY = 20, LABEL_HIST = 30; let labelFlashN = 0;
+const labelsEl = document.getElementById("labels"); const labelPool = [], labelBy = new Map();
 function placeLabels(list) {
   const v = new THREE.Vector3();
   // (under a page's result box the scene is drawn smaller, js/deck.js sawFit: a label's shift from its point is as
   // much smaller, and its letters too, css/explore.css, so the labels keep clear of each other and of their things)
   const z = ease.cam && ease.cam.zoom < 1 ? ease.cam.zoom : 1;
-  list.forEach((L, i) => {
-    let el = labelPool[i];
-    if (!el) { el = document.createElement("div"); labelsEl.appendChild(el); labelPool.push(el); }
+  const used = new Set(), seen = new Map();
+  list.forEach((L) => {
+    const base = (L.key ? "k:" + L.key : "t:" + L.text), n = seen.get(base) || 0; seen.set(base, n + 1);
+    const id = n ? base + "#" + n : base;
+    let el = labelBy.get(id); const fresh = !el;
+    if (!el) { el = labelPool.find((e) => e.hidden && !used.has(e) && ![...labelBy.values()].includes(e)); if (!el) { el = document.createElement("div"); labelsEl.appendChild(el); labelPool.push(el); } labelBy.set(id, el); }
+    used.add(el);
     v.set(...L.p).project(R3.camera);
-    el.className = "lab " + (L.cls || "") + (L.anchor === "left" || L.anchor === "right" ? " at-" + L.anchor : "");
+    const cls = "lab " + (L.cls || "") + (L.anchor === "left" || L.anchor === "right" ? " at-" + L.anchor : "");
+    if (el.className !== cls) el.className = cls;
     if (L.key) el.dataset.key = L.key; else delete el.dataset.key;
-    el.textContent = L.text;
-    el.style.left = (v.x * 0.5 + 0.5) * 1920 + (L.dx || 0) * z + "px";
-    el.style.top = (-v.y * 0.5 + 0.5) * 1080 + (L.dy || 0) * z + "px";
+    if (el.textContent !== L.text) el.textContent = L.text;
+    let x = (v.x * 0.5 + 0.5) * 1920 + (L.dx || 0) * z, y = (-v.y * 0.5 + 0.5) * 1080 + (L.dy || 0) * z;
+    const FL = window.__sw && window.__sw.labelFlash; // planted (tools/rules.mjs): the first label's point taking turns between two places 40 px apart, every `every` frames
+    if (FL && L === list[0]) { labelFlashN++; if (FL.point) x += (Math.floor(labelFlashN / FL.every) % 2) * 40; }
+    const far = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]) > LABEL_LEAP, r = [x, y];
+    if (fresh || el.hidden || !el._at) { el._hist = []; el._held = false; }
+    const H = el._hist, back = H.length > 1 && far(r, H[H.length - 1]) && H.slice(0, -1).some((q) => !far(q, r)); // back where its point just was
+    H.push(r); if (H.length > LABEL_HIST) H.shift();
+    if (el._at && !fresh && !el.hidden && (back || el._held)) {
+      el._held = true;
+      const stays = H.length >= LABEL_STAY && H.slice(-LABEL_STAY).every((q) => !far(q, r)); // its point settled
+      if (stays) { x = el._at[0] + (r[0] - el._at[0]) * LABEL_GLIDE; y = el._at[1] + (r[1] - el._at[1]) * LABEL_GLIDE; if (!far([x, y], r)) { [x, y] = r; el._held = false; } }
+      else [x, y] = el._at; // it holds
+    }
+    el._at = [x, y];
+    if (FL && L === list[0] && !FL.point) x += (Math.floor(labelFlashN / FL.every) % 2) * 40; // the label itself leaps, held by nothing (a planted fault)
+    el.style.left = x + "px";
+    el.style.top = y + "px";
     el.style.opacity = L.a ?? 1;
     el.hidden = false;
   });
-  for (let i = list.length; i < labelPool.length; i++) labelPool[i].hidden = true;
+  for (const [id, el] of labelBy) if (!used.has(el)) { el.hidden = true; labelBy.delete(id); }
+  for (const el of labelPool) if (!used.has(el)) el.hidden = true;
   if (window.__sw) window.__sw.labels = list; // for the readability check (tools/check.mjs): each label's point
 }
 // The links (S.links): what a window under the scene draws is what happens at a point of the scene (the user,
@@ -4451,6 +4491,8 @@ const neutralOf = (L) => { const n = nearestL(P.neutral, L); return { role: `neu
 // The role of one non-metal colour (linear RGB).
 // ctx.figure: the model is a body part; ctx.pcb: a circuit board (its substrate becomes Blue);
 // ctx.dark: the dark ground (a Blue body becomes Arboretum Blue, or it would vanish).
+// ctx.neutral: the scene asked for the model without the palette's hues (tone: "neutral"), since the paper's own
+// colour code uses one of them: every non-metal colour takes the neutral of its lightness; a figure keeps its grey.
 // on the light ground, the figure and the two lightest neutrals take the light page's darker step (PALETTE.onLight)
 function roleOf(rgb, ctx) {
   const r = roleOn(rgb, ctx);
@@ -4460,6 +4502,19 @@ function roleOf(rgb, ctx) {
   return r;
 }
 function roleOn(rgb, ctx) {
+  // tone "neutral": the neutral as light as the hue the colour would have taken on this ground, so a part
+  // the palette lifts off the dark ground (a Blue body) is lifted as a neutral too
+  // never the darkest neutral, which is next to black: what the hue told by colour the neutral tells by lightness.
+  // tone "neutral.N" names the step (0 lightest to 3) such a colour takes instead, where the model must set it
+  // against what stands behind it.
+  if (ctx.neutral && !ctx.figure) {
+    const r = hueOn(rgb, ctx); if (/^neutral/.test(r.role)) return r;
+    const n = ctx.step == null ? Math.min(P.neutral.indexOf(nearestL(P.neutral, lchOf(r.lin)[0])), 3) : ctx.step;
+    return { role: `neutral.${n}`, lin: P.neutral[n].lin };
+  }
+  return hueOn(rgb, ctx);
+}
+function hueOn(rgb, ctx) {
   const [L, C, h] = lchOf(rgb);
   const blue = () => (ctx.dark || L >= 0.6 ? { role: "hue.blue", lin: P.hue.blue } : { role: "brand.blue", lin: P.blue });
   if (ctx.pcb) return L < 0.62 ? blue() : neutralOf(L);
@@ -4570,10 +4625,12 @@ const tokenOf = (name) => (/(?:^|_)(?:opaque|trans)__([a-z]+)/.exec(name) || [])
 
 // Move every material of `root` onto the palette. Returns what each material became.
 //   slot: the library's slot (hand, head, torso, body: the figure's grey); ground: "light" or "dark";
-//   detail: how much of a texture's light and dark stays (0-1).
-function applyStudioLook(root, { THREE, id = "", slot = "", ground = "light", detail = 0.45 } = {}) {
+//   detail: how much of a texture's light and dark stays (0-1);
+//   tone: "neutral" keeps the model off the palette's hues (Blue, red, tan, brown): neutrals and metals only;
+//   "neutral.0" to "neutral.3" names the neutral its coloured parts take.
+function applyStudioLook(root, { THREE, id = "", slot = "", ground = "light", detail = 0.45, tone = "" } = {}) {
   prep();
-  const ctx = { figure: BODY.has(slot) && id !== "B19", pcb: false, dark: ground === "dark" };
+  const ctx = { figure: BODY.has(slot) && id !== "B19", pcb: false, dark: ground === "dark", neutral: /^neutral(\.[0-3])?$/.test(tone), step: /^neutral\.[0-3]$/.test(tone) ? +tone.slice(8) : null };
   const done = new Map();
   const geoDone = new WeakSet();
   const report = [];
@@ -4747,7 +4804,7 @@ const PARTS = () => {
 };
 // marks: where the glows and rings go (parts', unless a block's elements are
 // too close to mark one by one)
-// o.model: { id, turn, size, hide }, a model of the shared library the page holds (library.js) in the
+// o.model: { id, turn, size, hide, tone }, a model of the shared library the page holds (library.js) in the
 // block's drawn place: the drawing hidden, the library's model turned (turn: into the block's own frame,
 // front +x, up +y) and fitted to the drawing's box, its longest side to the box's longest (or sized as
 // size says, libraryModel's), its bottom centre on the box's; the block's points, glows and rings as they
@@ -4759,7 +4816,7 @@ function libraryFit(unit, spec) {
   unit.updateMatrixWorld(true);
   const inv = unit.matrixWorld.clone().invert(), box = new THREE.Box3(), m = new THREE.Matrix4(), drawn = [...unit.children];
   unit.traverse((c) => { if (c.isMesh && c.geometry) { if (!c.geometry.boundingBox) c.geometry.computeBoundingBox(); box.union(c.geometry.boundingBox.clone().applyMatrix4(m.multiplyMatrices(inv, c.matrixWorld))); } });
-  const lib = libraryModel(spec.id, { turn: spec.turn || [], size: spec.size || null, hide: spec.hide || null });
+  const lib = libraryModel(spec.id, { turn: spec.turn || [], size: spec.size || null, hide: spec.hide || null, tone: spec.tone || "" });
   if (!lib) return null;
   for (const c of drawn) c.visible = false;
   if (!box.isEmpty()) {
@@ -4846,17 +4903,21 @@ const LIBRARY = await (async () => {
 })();
 const LIBRARY_SHOWN = []; // every model made, to show the theme's copy
 
-// libraryModel(id, { turn, size, hide, hang }) → { group, size, setOpacity(a), bones(name) } or null.
+// libraryModel(id, { turn, size, hide, hang, tone }) → { group, size, setOpacity(a), bones(name) } or null.
 //   turn: [[axis, degrees], …], applied in that order about the world's axes;
 //   size: { x | y | z: cm } the model's extent along that axis once turned (in
 //   the scene's centimetres; a library model is in metres);
 //   hide: a test on a material's name for the parts to leave out (a stand);
 //   hang: true for a part hung from above (a bulb on its cord, a lamp from a beam): turned over after
 //   `turn`, base up, so the library's model, which stands on its base, hangs from it.
+//   tone: "neutral" for a model whose palette hue (a Blue seat, a red case) would read as the paper's own
+//   colour code (cold areas blue, a marked zone red): its coloured parts take the neutral of their lightness,
+//   its metals stay;
+//   "neutral.0" to "neutral.3" names the neutral they take (0 the lightest), to set the part against what is behind it. Only for that clash, said in the scene's note; a person's grey is not changed by it.
 // The group's origin is the bottom centre of the turned model; hung, its top centre, where its cord goes. A model with a
 // skeleton (a hand, a body) is copied with its own bones: bones(name) gives
 // that bone in each copy, for a block to pose (hand.js).
-function libraryModel(id, { turn = [], size = null, hide = null, hang = false } = {}) {
+function libraryModel(id, { turn = [], size = null, hide = null, hang = false, tone = "" } = {}) {
   const lib = LIBRARY[id];
   if (!lib) return null;
   const group = new THREE.Group(), copies = {};
@@ -4865,7 +4926,8 @@ function libraryModel(id, { turn = [], size = null, hide = null, hang = false } 
     let skinned = false; lib.scene.traverse((o) => { if (o.isSkinnedMesh) skinned = true; });
     const copy = skinned ? cloneSkinned(lib.scene) : lib.scene.clone(true);
     if (hide) copy.traverse((o) => { if (o.isMesh && [].concat(o.material).some((m) => hide(m.name || ""))) o.visible = false; });
-    STUDIO.applyStudioLook(copy, { THREE, id, slot: lib.slot, ground });
+    STUDIO.applyStudioLook(copy, { THREE, id, slot: lib.slot, ground, tone });
+    if (tone) group.userData.tone = tone;
     copy.traverse((o) => {
       if (!o.isMesh) return;
       o.castShadow = true;
@@ -7448,7 +7510,8 @@ PAPER_PAGES.pages = ["paper/p01.jpg","paper/p02.jpg","paper/p03.jpg","paper/p04.
 //   { kind: "clip", … }  a clip of a video (PAPER_MEDIA, by id: media), the
 //       frame at at(ctx) → seconds into the clip (default the page's time,
 //       looped), credited under it: captions: [{ from, to, text }] (seconds
-//       into the clip)
+//       into the clip); mark: [u, v] where the mark “Play the video” stands on
+//       the held frame (the frame's width and height as 1; default its middle)
 //   A copy of the model without the picture (the paper's material is not
 //   everyone's to pass on: tools/media.mjs) says so in the window instead.
 //   { kind: "overlay" | "section" | "zoom", … }  the forms a paper draws how
@@ -7807,7 +7870,10 @@ function clipWindow(spec, g, ctx, w, h) {
   // foot, how far it has played (at its set-up, the frame it is held at)
   { const len = S.frames / S.fps, by = y0 + fh * k - 7;
     g.save(); g.fillStyle = rgba(C.ink, 0.35); g.fillRect(x0, by, fw * k, 7); g.fillStyle = C.accent; g.fillRect(x0, by, (fw * k * Math.min(len, Math.max(0, sec))) / len, 7); g.restore(); }
-  if (held) { const cx = x0 + (fw * k) / 2, cy = y0 + fh * k - 44; // the mark to play it
+  // the mark to play it, in the frame's middle (at its foot it stood on the authors' subtitles), or where the
+  // model puts it over a frame whose middle holds words (`mark: [u, v]`, the frame's width and height as 1; not `play`, which is the clip's playing, js/deck.js)
+  if (held) { const [pu, pv] = Array.isArray(spec.mark) ? spec.mark : [0.5, 0.5], tw0 = 250;
+    const cx = Math.min(x0 + fw * k - tw0 / 2, Math.max(x0 + tw0 / 2, x0 + fw * k * pu)), cy = Math.min(y0 + fh * k - 34, Math.max(y0 + 24, y0 + fh * k * pv));
     g.save(); g.font = `600 19px ${MONO}`; const tw = g.measureText("▶  Play the video").width;
     g.fillStyle = rgba(C.ink, 0.82); g.fillRect(cx - tw / 2 - 16, cy - 20, tw + 32, 40); g.restore();
     text(g, "▶  Play the video", cx, cy + 7, { size: 19, col: C.bg, align: "center" }); }
@@ -8821,7 +8887,9 @@ PAGES.use = {
     const at = new Map((r.ids || []).map((id, i) => [id, r.est ? r.est[i] : NaN]));
     seatCells(S, { labels: (c) => (Number.isFinite(at.get(c.id)) ? `${at.get(c.id).toFixed(1)} °C` : ""), cls: "accent" });
     // its label on the outer side of its row (the car's right side is up on the screen), clear of Device A between the front seats
-    S.labels.push({ p: [H[0], 96, H[2]], text: `hot area +${st.ctl.dT} °C`, cls: "interf", dy: q[0] > 0 ? -44 : 44 });
+    // (where the reader can act, at the hot area until it is taken: js/show.js, cueOf; kit 6.0.0-alpha.83, tools/rules.mjs)
+    const cue = cueOf(st, "drag the hot area");
+    S.labels.push({ p: [H[0], 96, H[2]], text: cue ? cue[0] : `hot area +${st.ctl.dT} °C`, cls: cue ? cue[1] : "interf", dy: q[0] > 0 ? -44 : 44 });
   },
   status() { const r = VU.res; return !r ? "reading the seats" : r.why || `${r.nPaths} sound paths · ${r.reflect ? "LOS and reflections" : "LOS only"}`; },
   ro() {
@@ -10200,7 +10268,7 @@ function ablationFrame(st, dt) {
 //   subject: { at() → [x, y] (where it is drawn), anchor() → [x, y], move(p) (where the reader puts it:
 //       dragged, the anchor moves by the drag; clicked away from it, the anchor is where they click), tag }
 //   field(L, p) → a value, or Infinity where the layout reads nothing; drawn under `colour`:
-//   colour: { lo, hi, from, to (tokens), fmt(v) (the value under the pointer), ticks: [[v, words]],
+//   colour: { lo, hi, from, to (tokens), fmt(v) (the value under the pointer), ticks: [[v, words]], title (what the colours measure, drawn over the scale),
 //       none: words for Infinity }   on a log scale from lo (`from`) to hi (`to`)
 //   under(g, V, L), over(g, V, L)  the model's own layers, before the subject and after it, V = { X, Y, k }
 //   key(L) → words  what else the field depends on (a control's value, the subject's place), so the
@@ -10301,12 +10369,22 @@ function layoutWindow(spec, g, ctx, w, h) {
   for (const [t, x, y, col, faint, size] of tags) { if (faint) { g.save(); g.globalAlpha = 0.35; } text(g, t, x, y, { size: size || 16, col, align: "center", weight: size ? 500 : 600, backed: true }); if (faint) g.restore(); }
   // under the pointer: what the layout reads there
   if (cfg.field && st.hover && !st.drag) { const e = cfg.field(L, st.hover); text(g, cfg.colour.fmt(e), X(st.hover[0]) + 16, Y(st.hover[1]) - 14, { size: 17, col: C.ink, weight: 600 }); }
+  // where the reader can act, until they first press on it (the owner, 2026-11-21: “标注和交互提升…尽量都要有交互的
+  // 页面”): a ring pulsing from each point and the subject, and a pill that says what to drag (cfg.cue, else made
+  // from the subject's tag and the first group's)
+  if (!st.used) {
+    const rings = cfg.groups.flatMap((G) => L[G.id].map((p) => [X(p[0]), Y(p[1]), 12])), sp = S && S.at();
+    if (sp) rings.push([X(sp[0]), Y(sp[1]), 12]);
+    const g0 = cfg.groups[0], what = cfg.cue || `drag ${g0 && g0.tag ? "a point" : "the points"}${S && S.tag ? " or the " + S.tag : ""}`;
+    if (rings.length) chartCue(g, { rings, pill: [X(P.x[1]) - 10, Y(P.y[0]) - 28, what, "right"] }); // in the plane's lower right corner, clear of the window's title
+  }
   // the colour scale and the legend
   const lx = B[0], ly = h - 34, lw = 260;
   if (cfg.field) {
     const c = cfg.colour, at = (v) => lx + (lw * Math.log10(v / c.lo)) / Math.log10(c.hi / c.lo);
     for (let i = 0; i < lw; i++) { g.fillStyle = layoutCol(c, c.lo * (c.hi / c.lo) ** (i / lw), HEAT_A); g.fillRect(lx + i, ly - 10, 1.2, 14); }
     for (const [v, words] of c.ticks || []) text(g, words, at(v), ly + 24, { size: 14, col: C["ink-3"], align: "center" });
+    if (c.title) text(g, c.title, lx, ly - 18, { size: 15, col: C["ink-2"], weight: 600 }); // what the colours measure, over the scale
     if (c.none) { g.save(); g.fillStyle = C.none; g.fillRect(lx + lw + 50, ly - 10, 22, 14); g.restore(); text(g, c.none, lx + lw + 80, ly + 2, { size: 16, col: C["ink-2"] }); }
   }
   // the key after the scale (and its no-reading box), or where the scale would be when there is none
@@ -10334,6 +10412,7 @@ function layoutPointer(st) {
   el.addEventListener("pointerdown", (e) => {
     e.stopPropagation(); const p = at(e); if (!p) return;
     const d = hit(p); st.hover = null; if (!d) return;
+    st.used = true; // its cue goes (layoutWindow)
     turnUsed(st.id, d.subject ? "cue" : "panel:" + (cfg.panel || "layout")); // a step of the reader's that asks for it is done (js/deck.js)
     if (d.subject) { if (!onSubject(p)) S.move(p); d.from = S.anchor().slice(); d.p0 = p; } else d.was = st.pts[d.group][d.i].slice();
     st.drag = d; el.setPointerCapture(e.pointerId); el.style.cursor = "grabbing";
@@ -10350,6 +10429,7 @@ function layoutPointer(st) {
   const end = () => { const d = st.drag; if (d && d.off) { st.pts[d.group][d.i] = d.was; layoutDrop(st, d.group, d.i); } st.drag = null; el.style.cursor = ""; };
   el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
   el.addEventListener("pointerleave", () => { st.hover = null; });
+  if (window.__sw) (window.__sw.cues = window.__sw.cues || []).push({ id: st.id, panel: cfg.panel || "layout", used: () => !!st.used });
 }
 // for the checks (tools/shots.mjs): where each group's first point is on the screen (null while it has none), and the subject
 // (`subject`, so no group is called that), to drag them
@@ -10416,7 +10496,9 @@ function vxScene(S, kind, o = {}) {
   if (o.heat && o.heatText && S && S.labels) tryIt("heat's name", () => {
     const h = [].concat(o.heat)[0], H = (typeof SETTING !== "undefined" && SETTING[kind] && SETTING[kind].heatH) || 0;
     const p = o.heatAt === "middle" ? [h.x, h.y] : [h.x, h.y + (o.heatAt === "far" ? 1 : -1) * (h.h ?? h.w ?? 0.2) / 2];
-    S.labels.push({ p: vxAt(p, H), text: o.heatText, cls: "interf", dy: o.heatDy ?? 28, key: "heat" });
+    // (where the reader can act, at the hot area until it is taken: js/show.js, cueOf; kit 6.0.0-alpha.83, tools/rules.mjs)
+    const st = typeof SIMS !== "undefined" ? SIMS[slides[cur].id] : null, cue = st && PAGES[st.id] && PAGES[st.id].drag ? cueOf(st, "drag the hot area") : null;
+    S.labels.push({ p: vxAt(p, H), text: cue ? cue[0] : o.heatText, cls: cue ? cue[1] : "interf", dy: o.heatDy ?? 28, key: "heat" });
   });
 }
 // the hot area's words: how much warmer than the room it is
@@ -11735,7 +11817,7 @@ if (window.__sw) window.__sw.lights = () => {
   const rows = [...sec.querySelectorAll(".panel.rowp")].filter((p) => rowShown(p));
   const shown = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== "hidden";
   const need = [];
-  for (const el of sec.querySelectorAll("[data-ctl]")) if (shown(el) || el.closest(".controls")) need.push([el.dataset.ctl + (el.dataset.set ? "=" + el.dataset.set : ""), lightFor(id, el.dataset.ctl, el.dataset.set ? el.dataset.set === "true" : undefined, el)]);
+  for (const el of sec.querySelectorAll("[data-ctl]")) if (shown(el) || el.closest(".controls")) need.push([el.dataset.ctl + (el.dataset.set ? "=" + el.dataset.set : ""), lightFor(id, el.dataset.ctl, el.dataset.set ? (el.dataset.set === "true" ? true : el.dataset.set === "false" ? false : +el.dataset.set) : undefined, el)]);
   for (const el of sec.querySelectorAll("[data-act]")) if (el.dataset.act !== "reset") need.push([el.dataset.act, lightFor(id, el.dataset.act, undefined, el)]);
   for (const el of sec.querySelectorAll("[data-preset]")) need.push(["preset=" + el.dataset.preset, lightFor(id, "preset", el.dataset.preset, el)]);
   if (SIMS[id] && PAGES[id] && PAGES[id].drag) need.push(["drag", lightFor(id, "drag")]);
@@ -12573,7 +12655,10 @@ const rdName = Object.fromEntries(rdCards.map((b) => [b.dataset.reader, b.queryS
 const rdAsk = document.querySelector(".goal.pick .gask"), rdWho = rdCards.length ? rdCards[0].parentElement : null;
 const rdChip = document.getElementById("rchip"), rdBox = document.getElementById("skipbox");
 const RD_WORD = { close: "Read closely", skip: "Can skip" };
-const rdDef = rdWho && rdName[rdWho.dataset.default] ? rdWho.dataset.default : "", rdDefLine = document.querySelector(".goal.pick .gdef"), rdKey = document.querySelector(".goal.pick .gkey");
+// (a reader's own browser marks the pages for no kind until one is picked, and none is pressed: the owner, 2026-11-21:
+// “五个身份不要默认给我选paper author，默认是啥都不选，要让用户选，选了才能往下”, js/feedback.js waits for it; the kit's own
+// browsers, navigator.webdriver, keep the model's default for the checks)
+const rdDef = typeof navigator !== "undefined" && !navigator.webdriver ? "" : rdWho && rdName[rdWho.dataset.default] ? rdWho.dataset.default : "", rdDefLine = document.querySelector(".goal.pick .gdef"), rdKey = document.querySelector(".goal.pick .gkey");
 const rdQuery = new URLSearchParams(location.search).get("reader"), rdOff = rdQuery === "off";
 let rdPick = "", rdKind = "", rdRun = null; // the kind the reader picked; the kind the pages are marked for
 const rdDeclined = new Set(); // the stretches the reader chose to read: not asked again on this visit
@@ -12954,9 +13039,12 @@ PV_LIVE["exp-kg"] = (media) => {
       g.globalAlpha = (me && s.m === me.m ? 0.5 : 0.28) + 0.4 * (0.5 + 0.5 * Math.sin(t * 2.3 + s.tw));
       g.fillStyle = s.c; g.beginPath(); g.arc(x, y, 1.2 * s.z * Math.sqrt(z * 2), 0, TAU); g.fill();
     }
+    // in a card the preview is drawn at about half its size: words that small are not read, so it has none there
+    // (the same preview opened large has them)
+    const words = (media.offsetWidth || W) >= 480;
     g.font = `600 13px ${MONO}`; g.textAlign = "center";
     for (const gx of Object.values(G)) {
-      if (gx.m === "other" || !gx.list.length) continue;
+      if (!words || gx.m === "other" || !gx.list.length) continue;
       const [x, y] = P(gx.x, gx.y + 0.78 * gx.R + 30); if (x < 80 || x > W - 80 || y < 16 || y > H - 150) continue;
       g.globalAlpha = 0.8; g.fillStyle = UNI_COL[gx.m]; g.fillText(gx.m.toUpperCase(), x, y); // no counts (the user, 2026-11-12)
     }
@@ -12966,7 +13054,7 @@ PV_LIVE["exp-kg"] = (media) => {
       for (const s of links) { const [x, y] = P(s.x, s.y); g.globalAlpha = 0.28 * ln; g.beginPath(); g.moveTo(mx, my); g.lineTo(mx + (x - mx) * ln, my + (y - my) * ln); g.stroke(); }
       g.globalAlpha = 1; uniGlow(g, mx, my, 24 + 5 * Math.sin(t * 4), col);
       g.fillStyle = "#ffffff"; g.beginPath(); g.arc(mx, my, 3.5, 0, TAU); g.fill();
-      g.font = `800 22px ${FONT}`; g.textAlign = "left"; g.fillStyle = col; g.fillText(KG.name, mx + 18, my - 12);
+      if (words) { g.font = `800 22px ${FONT}`; g.textAlign = "left"; g.fillStyle = col; g.fillText(KG.name, mx + 18, my - 12); }
     }
     g.globalAlpha = 1;
     if (on) raf = requestAnimationFrame(draw);
@@ -13208,6 +13296,8 @@ if (WORLD_SEC) {
 const simHere = () => { const id = slides[cur].id; return SIMS[id] && PAGES[id].drag && !(PAGES[id].dragFrom > step) ? SIMS[id] : null; };
 // for the checks: how a page's subject is dragged (its drag in the scene, or on its layout)
 if (window.__sw) window.__sw.drag = (id) => (SIMS[id] && PAGES[id] && PAGES[id].drag) || (LAYOUTS[id] && LAYOUTS[id].cfg.subject ? "layout" : null);
+// and whether the reader may drag it now (a page that opens its drag at a later step, dragFrom, or never: Infinity; tools/rules.mjs)
+if (window.__sw) window.__sw.dragOpen = (id) => { const d = window.__sw.drag(id); return d && !(d !== "layout" && PAGES[id].dragFrom > step) ? d : null; };
 // where the pointer meets the subject's plane: z = 0 ([x, y]), or the page's plane through `at` ([x, y, z])
 function dragHit(st, x, y, at) { const n = PAGES[st.id].plane; return n ? onPlaneOf(stageRay(x, y), at, hv.unit(n)) : planeAt(x, y); }
 function setRest(st, p) {
@@ -13255,11 +13345,13 @@ function fmtVal(f, v, names) {
   });
 }
 // the controls: [data-ctl] switches and sliders, [data-act] buttons
+// a button's data-set: "true" or "false" (a switch's side), else the index of a choice among kinds (pages.mjs, names)
+const setOf = (s) => (s === "true" ? true : s === "false" ? false : +s);
 function syncControls(id) {
   const sec = document.getElementById(id), st = SIMS[id]; if (!sec || !st) return;
   for (const el of sec.querySelectorAll("[data-ctl]")) {
     const v = st.ctl[el.dataset.ctl];
-    if (el.tagName === "BUTTON") el.setAttribute("aria-pressed", String(el.dataset.set ? String(!!v) === el.dataset.set : !!v)); else el.value = v;
+    if (el.tagName === "BUTTON") el.setAttribute("aria-pressed", String(el.dataset.set ? (typeof setOf(el.dataset.set) === "boolean" ? String(!!v) === el.dataset.set : +v === setOf(el.dataset.set)) : !!v)); else el.value = v;
   }
   for (const o of sec.querySelectorAll("[data-val]")) o.textContent = fmtVal(o.dataset.fmt || "{v}", st.ctl[o.dataset.val], o.dataset.names && JSON.parse(o.dataset.names));
   const dk = st.cfg.view; // the switch that picks the page's view (data-dim 1 or 2)
@@ -13281,7 +13373,7 @@ function applyPreset(id, el) {
 for (const sec of document.querySelectorAll(".slide.sim")) {
   const id = sec.id;
   for (const el of sec.querySelectorAll("[data-ctl]")) {
-    if (el.tagName === "BUTTON") el.addEventListener("click", (e) => { e.stopPropagation(); const v = el.dataset.set ? el.dataset.set === "true" : !SIMS[id].ctl[el.dataset.ctl]; if (v !== SIMS[id].ctl[el.dataset.ctl]) onControl(id, el.dataset.ctl, v); syncControls(id); lightBy(id, el.dataset.ctl, v, el); turnUsed(id, "ctl:" + el.dataset.ctl); });
+    if (el.tagName === "BUTTON") el.addEventListener("click", (e) => { e.stopPropagation(); const v = el.dataset.set ? setOf(el.dataset.set) : !SIMS[id].ctl[el.dataset.ctl]; if (v !== SIMS[id].ctl[el.dataset.ctl]) onControl(id, el.dataset.ctl, v); syncControls(id); lightBy(id, el.dataset.ctl, v, el); turnUsed(id, "ctl:" + el.dataset.ctl); });
     else el.addEventListener("input", () => { onControl(id, el.dataset.ctl, +el.value); syncControls(id); lightBy(id, el.dataset.ctl, undefined, el); turnUsed(id, "ctl:" + el.dataset.ctl); });
   }
   for (const el of sec.querySelectorAll("[data-preset]")) el.addEventListener("click", (e) => { e.stopPropagation(); applyPreset(id, el); });
@@ -13295,8 +13387,10 @@ for (const sec of document.querySelectorAll(".slide.sim")) {
 // axis, pointed anywhere. A slider does not do for these: the reader moves the thing itself, and the chain
 // reads where it is. A simulator page lists its handles:
 //   PAGES[id].handles = [{ dof, ctl, at, … }], each:
-//     dof: "press"   pushed in along `axis` (the way it goes in, [0, −1, 0]); a drag along the arrow, `span`
-//                    px (160) over its whole range: what it goes in by is too small to drag at the scene's scale
+//     dof: "press"   pushed in along `axis` (the way it goes in, [0, −1, 0]): the mouse held on the grip pushes
+//                    it in, to its range's end in PRESS_MS, and let go it comes back (alpha.83; the owner,
+//                    2026-11-21: "按压不用手势，直接鼠标点击更真实合适"); a drag along the arrow sets how far
+//                    it is in and keeps it there, `span` px (160) over its whole range
 //          "height"  raised off its plane along `axis` ([0, 1, 0]): the thing follows the pointer (`per`, the
 //                    value's units per scene unit, 1), and a ruler from the plane under it (foot(st) → [x, y, z],
 //                    else `at` less the height) marked every `tick` scene units (1)
@@ -13316,8 +13410,9 @@ for (const sec of document.querySelectorAll(".slide.sim")) {
 // __sw.handles() (each handle on the page now: its dof, its control, where its grip is on the screen and
 // the way to drag it), __sw.ctl(id) (a page's controls and its subject's rest, to see what a drag moved).
 const HANDLE_NEAR = 22; // px: how near the pointer must come to a grip to take it
+const PRESS_MS = 900, PRESS_BACK_MS = 250, PRESS_STILL = 5; // a press held: ms to its range's end, ms to come back, px the pointer may move and still hold
 const hcan = document.getElementById("handles");
-let HANDLES_AT = [], HDRAG = null, HOVER = null; // the grips as last drawn; the one dragged; the one under the pointer
+let HANDLES_AT = [], HDRAG = null, HOVER = null, HBACK = null; // the grips as last drawn; the one dragged; the one under the pointer; a press let go, coming back
 const hv = { add: (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], sub: (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], mul: (a, k) => [a[0] * k, a[1] * k, a[2] * k], dot: (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], cross: (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], unit: (a) => { const l = Math.hypot(...a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; } };
 const h2 = { sub: (a, b) => [a[0] - b[0], a[1] - b[1]], unit: (a) => { const l = Math.hypot(...a); return l > 1e-6 ? [a[0] / l, a[1] / l] : null; } };
 const hRange = (id, h) => { const el = document.querySelector(`#${id} input[type=range][data-ctl="${[].concat(h.ctl)[0]}"]`); return h.range || (el ? [+el.min, +el.max] : null); };
@@ -13371,7 +13466,21 @@ function hText(g, s, x, y, col, align = "left") {
   HANDLE_WORDS.push({ text: String(s), x0, y0: y - 13, x1: x0 + w, y1: y + 4 });
   g.restore();
 }
+// a press held by the mouse goes in while it is held; let go, it comes back where it was
+function pressStep() {
+  const now = performance.now();
+  if (HDRAG && HDRAG.h.dof === "press" && HDRAG.hold) {
+    const r = hRange(HDRAG.st.id, HDRAG.h) || [0, 1];
+    hPut(HDRAG.st, HDRAG.h, HDRAG.v0 + clamp((now - HDRAG.t0) / PRESS_MS, 0, 1) * (r[1] - HDRAG.v0));
+  }
+  if (HBACK) {
+    const k = clamp((now - HBACK.t0) / PRESS_BACK_MS, 0, 1);
+    hPut(HBACK.st, HBACK.h, HBACK.from + (HBACK.to - HBACK.from) * k);
+    if (k >= 1) HBACK = null;
+  }
+}
 function drawHandles(id, ctx) {
+  pressStep();
   const k = R3 ? R3.renderer.getPixelRatio() : 1;
   if (hcan.width !== Math.round(1920 * k)) { hcan.width = Math.round(1920 * k); hcan.height = Math.round(1080 * k); }
   const g = hcan.getContext("2d"); g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, 1920, 1080);
@@ -13418,7 +13527,8 @@ stage.addEventListener("pointerdown", (e) => {
   const { h, st, m } = hit;
   if (st.ctl.auto) { onControl(st.id, "auto", false); syncControls(st.id); }
   st.dragged = true;
-  HDRAG = { h, st, m, q: [x, y], v0: hGet(st, h), ray0: stageRay(x, y) };
+  HBACK = null;
+  HDRAG = { h, st, m, q: [x, y], v0: hGet(st, h), ray0: stageRay(x, y), hold: h.dof === "press", t0: performance.now() };
   stage.setPointerCapture(e.pointerId); stage.classList.add("grabbing");
 }, true);
 stage.addEventListener("pointermove", (e) => {
@@ -13428,6 +13538,10 @@ stage.addEventListener("pointermove", (e) => {
   e.stopPropagation();
   const { h, st, m, q, v0, ray0 } = HDRAG, ray = stageRay(x, y), dp = [x - q[0], y - q[1]];
   if (h.dof === "press") {
+    if (HDRAG.hold) { // held still, it is pressed; moved, it is dragged from where it is now
+      if (Math.hypot(dp[0], dp[1]) < PRESS_STILL) return;
+      HDRAG.hold = false; HDRAG.q = [x, y]; HDRAG.v0 = hGet(st, h); return;
+    }
     const r = hRange(st.id, h) || [0, 1];
     hPut(st, h, v0 + ((dp[0] * m.u[0] + dp[1] * m.u[1]) / (h.span || 160)) * (r[1] - r[0]));
   } else if (h.dof === "height") {
@@ -13444,7 +13558,7 @@ stage.addEventListener("pointermove", (e) => {
     hPut(st, h, hv.unit(hv.sub(X, m.P)));
   }
 }, true);
-const endHandle = (e) => { if (!HDRAG) return; HDRAG = null; stage.classList.remove("grabbing"); e.stopPropagation(); };
+const endHandle = (e) => { if (!HDRAG) return; if (HDRAG.hold) HBACK = { h: HDRAG.h, st: HDRAG.st, from: hGet(HDRAG.st, HDRAG.h), to: HDRAG.v0, t0: performance.now() }; HDRAG = null; stage.classList.remove("grabbing"); e.stopPropagation(); };
 stage.addEventListener("pointerup", endHandle, true); stage.addEventListener("pointercancel", endHandle, true);
 if (window.__sw) {
   window.__sw.handles = () => {
@@ -13516,7 +13630,8 @@ if (window.__sw) {
 //       at(ctx) → [x, y, z] the point it looks at (the scene's frame)  size: how wide the view is there
 //       (the scene's unit)  from(ctx) → [dx, dy, dz] the direction it looks from (default: the scene's
 //       camera's)  fov (20°)  note: words under it
-//       The page says where it looks (a label at `at` in the scene).
+//       The page says where it looks (a label at `at` in the scene). A thing a label names that is under
+//       120 px in the whole scene is seen here: the label's point within the view (size / 2 of `at`).
 // setControl(id, name, value): a control set from a window (a drag on an overlay), held to its slider's
 // range, the model told (SIM_MODEL.control) and the page's controls showing it.
 // meeting(step, seconds): an overlay's apart, the two drawn apart as the step begins and slid together.
@@ -13762,7 +13877,8 @@ function sectionWindow(spec, g, ctx, w, h) {
     } else {
       const xsAt = p.at != null ? [p.at] : [0.2, 0.4, 0.6, 0.8].map((u) => x0 + u * (x1 - x0));
       for (const xa of xsAt) { const i = at(xa), y = Y(i, -T / 2) + 4; arrow(g, X(xs[i]), y + len, X(xs[i]), y, col, 3, 12); }
-      if (p.what) text(g, p.what, X((x0 + x1) / 2), By + Bh - 32, { size: 15, col, align: "center" });
+      // (backed: words wider than the gap between the two middle arrows were crossed by them)
+      if (p.what) text(g, p.what, X((x0 + x1) / 2), By + Bh - 32, { size: 15, col, align: "center", backed: true });
     }
   }
   g.restore();
@@ -13779,11 +13895,13 @@ function sectionWindow(spec, g, ctx, w, h) {
 // ---- a part of the scene, closer: a second camera's view, rendered into the window, the scene's
 // own view put back after it
 const ZOOM_CAM = new WeakMap();
+const ZOOM_AT = new WeakMap();
 function zoomWindow(spec, g, ctx, w, h) {
   if (!R3) return waiting(g, w, h, "no 3-D scene in this browser");
   const R = R3.renderer, top = 44, foot = spec.note ? 30 : 10, vh = h - top - foot, at = spec.at(ctx), fov = spec.fov ?? 20;
   let cam = ZOOM_CAM.get(spec);
   if (!cam) { cam = new THREE.PerspectiveCamera(fov, w / vh, 0.01, 4000); ZOOM_CAM.set(spec, cam); }
+  ZOOM_AT.set(spec, { at: [at[0], at[1], at[2]], size: spec.size }); // where it looks now, for the checks (__sw.zooms)
   const from = spec.from ? spec.from(ctx) : [R3.camera.position.x - at[0], R3.camera.position.y - at[1], R3.camera.position.z - at[2]];
   const n = Math.hypot(...from) || 1, d = spec.size / 2 / (Math.tan((fov * Math.PI) / 360) * (w / vh));
   cam.fov = fov; cam.aspect = w / vh; cam.near = d / 50; cam.far = d * 60;
@@ -13795,7 +13913,7 @@ function zoomWindow(spec, g, ctx, w, h) {
   // how much closer than the scene's view: the scene's pixels for a unit there against the window's
   const dm = Math.hypot(R3.camera.position.x - at[0], R3.camera.position.y - at[1], R3.camera.position.z - at[2]);
   const mag = (w / spec.size) / (1080 / (2 * dm * Math.tan((R3.camera.fov * Math.PI) / 360)));
-  text(g, `×${mag >= 10 ? mag.toFixed(0) : mag.toFixed(1)}`, w - 14, top + 22, { size: 15, col: C["ink-3"], align: "right" });
+  text(g, `×${mag >= 10 ? mag.toFixed(0) : mag.toFixed(1)}`, w - 14, top + 22, { size: 15, col: C["ink-3"], align: "right", backed: true }); // (backed: the scene's lines pass behind it)
   if (spec.note) text(g, spec.note, 16, h - 12, { size: 14, col: C["ink-3"] });
 }
 
@@ -13843,6 +13961,9 @@ if (window.__sw) {
     }
     return out;
   };
+  // the close windows shown on the page now: where each looks and how wide (tools/check.mjs, readable: a thing
+  // too small in the whole scene is seen in the window that looks at it)
+  window.__sw.zooms = () => panels.filter((p) => p.slide === slides[cur] && p.el.offsetParent && p.el.classList.contains("shown") && !p.el.classList.contains("dimoff")).map((p) => windowSpec(p.slide.id, p.name)).filter((s) => s && s.kind === "zoom" && ZOOM_AT.get(s)).map((s) => ZOOM_AT.get(s));
   window.__sw.overlays = () => panels.filter((p) => p.slide === slides[cur]).map((p) => [p, windowSpec(p.slide.id, p.name)]).filter(([, s]) => s && s.kind === "overlay" && FORM_AT.get(s)).map(([p, s]) => {
     const G = FORM_AT.get(s), r = p.el.getBoundingClientRect(), sx = r.width / p.el.offsetWidth, sy = r.height / p.el.offsetHeight, scr = (q) => [r.left + q[0] * sx, r.top + q[1] * sy];
     const n = formWave(G.B).map((v) => v * G.B.pitch);
@@ -14154,6 +14275,11 @@ if (window.__sw) {
 //     at() → [right, up], place([right, up]), stage() → [x, y] } (cm, as the view shows them; stage, optional: where
 //     it is drawn on the 1920 × 1080 stage, for the window to keep off it): the hand moves it the same way, so the
 //     reader learns the camera where the page teaches the rest
+//   a thing turned (alpha.83; the owner, 2026-11-21): each turn handle the page shows now (js/handles.js,
+//     PAGES[id].handles, dof "turn"; a free thing's own turn is js/free.js's) takes the hand too: the hand's roll
+//     before the screen turns it as far (degrees, times its per, the way the reader sees the hand turn). A press
+//     is the mouse's, held on its grip (js/handles.js; the owner: "按压不用手势，直接鼠标点击更真实合适"). A page
+//     whose subject is not dragged but has a turn handle offers the camera for it alone (readerUse "gesture")
 //   the hand drawn: as the page draws it, or, with "Every joint" (outside the paper's conditions, where the chain
 //     still reads one point), the scene's hand bent as the reader's fingers are and turned as the reader's hand has
 //     turned since it was taken (S.handLive, blocks/hand.js)
@@ -14186,7 +14312,7 @@ MP.hand = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_
 MP.pose = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
 const CAM_NO = "The camera is not available here: it works on the published page (or over https, or from a local server: its README), with the camera allowed. The mouse still moves it";
 const CM = 100; // the scene's units a metre (the scene is drawn in centimetres, as its blocks are)
-const READER = { cam: null, fake: false, msg: "", joints: false, bodyOn: false, full: false, feet: false, grip: null, seen: -1e9, live: null, body: null, bodyGrip: null, bodySeen: -1e9, moved: null, stats: { frames: 0, hands: 0, bodies: 0 } };
+const READER = { cam: null, fake: false, msg: "", joints: false, bodyOn: false, full: false, feet: false, grip: null, seen: -1e9, live: null, body: null, bodyGrip: null, bodySeen: -1e9, moved: null, gest: null, stats: { frames: 0, hands: 0, bodies: 0 } };
 function focal() { return 0.5 / Math.tan((MP.hfov * Math.PI) / 360); } // the camera's focal length in its picture's widths (its view across, assumed)
 const readerOn = () => !!(READER.cam || READER.fake); // the camera on (or a check's frames standing in for it)
 const bodyHook = () => (typeof SIM_MODEL !== "undefined" && SIM_MODEL.body) || null;
@@ -14196,8 +14322,33 @@ const wornHere = () => { const f = freeOf(slides[cur].id); return !!(f && handSp
 function readerUse(id) {
   if (!R3 || !PAGES[id] || !camMoves(document.getElementById(id)).length) return null; // no camera where the paper senses no person (js/free.js, camMoves)
   if (ownCam(id)) return ownCam(id).drag === "plane" ? "plane" : "line";
-  if (!SIMS[id] || !PAGES[id].drag || SIMS[id].own) return null;
-  return freeOf(id) ? "free" : PAGES[id].drag === "line" || PAGES[id].drag === "plane" ? PAGES[id].drag : null;
+  if (!SIMS[id] || SIMS[id].own) return null;
+  if (freeOf(id)) return "free";
+  if (PAGES[id].drag === "line" || PAGES[id].drag === "plane") return PAGES[id].drag;
+  return gestOf(id) ? "gesture" : null;
+}
+// ---- a thing turned by the hand (alpha.83): the page's turn handles (js/handles.js); a press is the mouse's, and a
+// free thing's page has none here (the hand already turns it, js/free.js)
+const GEST_DOFS = ["turn"];
+const gestDofs = (id) => (freeOf(id) ? [] : GEST_DOFS);
+const gestOf = (id) => !!(PAGES[id] && SIMS[id] && (PAGES[id].handles || []).some((h) => gestDofs(id).includes(h.dof)));
+// the handles the hand moves now: those the page drew this frame (shown, their grip on the frame: HANDLES_AT)
+const gestNow = (id) => (gestOf(id) ? HANDLES_AT.filter((e) => e.st && e.st.id === id && gestDofs(id).includes(e.h.dof)) : []);
+const wrapDeg = (d) => ((((d + 180) % 360) + 360) % 360) - 180;
+function feedGestures(id, p, t, fresh) {
+  const hs = gestNow(id);
+  if (!hs.length || plant("gestureOff")) { READER.gest = null; return; }
+  const key = hs.map((e) => PAGES[id].handles.indexOf(e.h)).join(",");
+  if (fresh || !READER.gest || READER.gest.id !== id || READER.gest.key !== key) {
+    READER.gest = { id, key, roll0: p.roll, v0: hs.map((e) => hGet(e.st, e.h)), fl: oneEuro(1, 1), turned: 0 };
+    takeOver(hs[0].st);
+  }
+  const g = READER.gest, B = viewAxes().B;
+  g.turned = g.fl(wrapDeg(((p.roll - g.roll0) * 180) / Math.PI), t);
+  hs.forEach((e, i) => {
+    const h = e.h, way = hv.dot(hv.unit(h.axis || [0, 1, 0]), B) >= 0 ? 1 : -1; // as the reader sees it: the axis toward the reader or away
+    hPut(e.st, h, g.v0[i] + way * g.turned * (h.per || 1));
+  });
 }
 // the view's axes in the scene: right, up, back (toward the reader)
 function viewAxes() { const e = R3.camera.matrixWorld.elements; return { R: [e[0], e[1], e[2]], U: [e[4], e[5], e[6]], B: [e[8], e[9], e[10]] }; }
@@ -14308,10 +14459,12 @@ function readerFeed(frame, t) {
   READER.stats.frames++;
   READER.whole = !!bd; READER.feet = !!(bd && seenAt(bd.image, 27) && seenAt(bd.image, 28)); // the Full-body camera asks for the feet
   if (bd) { READER.stats.bodies++; if (st && !ownCam(id)) feedBody(st, bd, asp, t); } // the body: on a simulator page, where a chain may hear it
-  if (!hd) { if (t - READER.seen > 0.5) { READER.grip = null; READER.live = null; READER.moved = null; } return false; }
+  if (!hd) { if (t - READER.seen > 0.5) { READER.grip = null; READER.live = null; READER.moved = null; READER.gest = null; } return false; }
   READER.stats.hands++;
   const fresh = t - READER.seen > 0.5;
-  if (ownCam(id)) feedOwn(id, ownCam(id), handPose(hd, asp), t, fresh); else if (use === "free") feedHand(frame, t); else feedPlace(st, handPose(hd, asp), t, fresh);
+  const pose = handPose(hd, asp);
+  if (ownCam(id)) feedOwn(id, ownCam(id), pose, t, fresh); else if (use === "free") feedHand(frame, t); else if (use !== "gesture") feedPlace(st, pose, t, fresh);
+  feedGestures(id, pose, t, fresh); // a thing turned: the hand's roll (alpha.83)
   liveHand(hd, t, fresh);
   READER.seen = t;
   return true;
@@ -14352,7 +14505,7 @@ function fullBody() {
   if (READER.full && !readerOn()) startReader(); else { readerBtns(readerOn()); readerSync(); }
 }
 function stopReader(keep = false) {
-  const c = READER.cam; READER.cam = null; READER.grip = null; READER.live = null; READER.body = null; READER.bodyGrip = null; READER.moved = null; READER.full = false; READER.feet = false;
+  const c = READER.cam; READER.cam = null; READER.grip = null; READER.live = null; READER.body = null; READER.bodyGrip = null; READER.moved = null; READER.gest = null; READER.full = false; READER.feet = false;
   readerBtns(false); camCan.style.display = "none"; if (!keep) camWin.hidden = true;
   for (const st of Object.values(SIMS)) if (st.carry) { st.carry = null; if (st.sim) st.reset(); }
   if (typeof FREE !== "undefined") FREE.grip = null;
@@ -14405,7 +14558,9 @@ function readerNums() {
   const use = readerUse(slides[cur].id), cm = (v) => `${v.toFixed(1)} cm`;
   const a = READER.moved && use !== "free" ? `hand moved ${cm(Math.hypot(...READER.moved))}${use === "line" ? " (along its line)" : " (in its plane)"}` : "";
   const b = READER.body && readerOn() ? `body moved ${cm(Math.hypot(...READER.body.off))} · ${Math.round(CM * READER.body.D)} cm from the camera` : "";
-  const s = [a, b].filter(Boolean).join(" · ") + (a || b ? " · estimated" : "");
+  const G = READER.gest && READER.gest.id === slides[cur].id ? READER.gest : null, hs = G ? gestNow(G.id) : [];
+  const c = G && hs.length ? `hand turned ${Math.round(G.turned)}°` : "";
+  const s = [a, c, b].filter(Boolean).join(" · ") + (a || b || c ? " · estimated" : "");
   if (camNums.textContent !== s) camNums.textContent = s;
 }
 // the hand's side, the reader's own: MediaPipe names it as if the picture were mirrored (a selfie's), and the picture it
@@ -14413,6 +14568,10 @@ function readerNums() {
 const sideOf = (r, i) => { const c = ((r.handedness || r.handednesses || [])[i] || [])[0], n = c && (c.categoryName || c.displayName); return n === "Left" ? "Right" : n === "Right" ? "Left" : "Right"; };
 // with the Full-body camera, what the reader is told first: to stand back until the camera sees all of them, feet too
 const fullSay = (say) => (!READER.full ? say : !READER.whole ? "stand back, so the camera sees all of you" : !READER.feet ? "your feet are not in the picture: step back, or use an external camera" : say);
+// what the hand does to the thing turned, in words (alpha.83)
+function gestSay(id) {
+  return gestNow(id).length ? "turn your hand to turn it" : gestOf(id) && readerUse(id) === "gesture" ? "choose what to turn" : "";
+}
 function readerStep() {
   const c = READER.cam, v = c.video; if (!v || v.readyState < 2 || v.currentTime === c.last) return;
   c.last = v.currentTime;
@@ -14424,7 +14583,7 @@ function readerStep() {
     bodies: rb ? rb.landmarks.map((lm, i) => ({ image: lm.map((p) => [p.x, p.y, p.z, p.visibility ?? 1]), world: rb.worldLandmarks[i].map((p) => [p.x, p.y, p.z]) })) : [],
   };
   drawReader(frame);
-  const held = readerFeed(frame, t / 1000), use = readerUse(slides[cur].id), say = !held ? "hold up your hand, the index finger out" : use === "free" ? (wornHere() ? "it is worn on your hand: move that finger; the whole hand moves nothing" : "your hand holds it: move it, raise it, turn it, at once") : `your hand moves it ${use === "line" ? "along its line" : "in its plane"}`;
+  const held = readerFeed(frame, t / 1000), use = readerUse(slides[cur].id), say = !held ? "hold up your hand, the index finger out" : use === "free" ? (wornHere() ? "it is worn on your hand: move that finger; the whole hand moves nothing" : `your hand holds it: move it, raise it, turn it, at once${gestSay(slides[cur].id) ? `; ${gestSay(slides[cur].id)}` : ""}`) : use === "gesture" ? gestSay(slides[cur].id) : `your hand moves it ${use === "line" ? "along its line" : "in its plane"}${gestSay(slides[cur].id) ? `; ${gestSay(slides[cur].id)}` : ""}`;
   const whole = fullSay(say);
   if (whole !== READER.msg) readerMsg(whole);
 }
@@ -14460,7 +14619,7 @@ function camDodge(id) {
 // use page), after its own switches (a free thing's page has its own, js/free.js); the key C on all of them
 for (const sec of document.querySelectorAll(".slide")) {
   const id = sec.id, own = !!ownCam(id);
-  if (!PAGES[id] || freeOf(id) || !camMoves(sec).length || !(own || (sec.classList.contains("sim") && (PAGES[id].drag === "line" || PAGES[id].drag === "plane")))) continue;
+  if (!PAGES[id] || freeOf(id) || !camMoves(sec).length || !(own || (sec.classList.contains("sim") && (PAGES[id].drag === "line" || PAGES[id].drag === "plane" || gestOf(id))))) continue;
   const auto = sec.querySelector('.controls [data-ctl="auto"]'), box = auto ? auto.parentElement : sec.querySelector(".controls"), sw = [...sec.querySelectorAll(".switch")].pop();
   if (auto || box) camSwitches(sec, auto, box);
   else if (own && sw) { // the page's own switch stands alone where the CSS puts it: a row there, its switch then the camera's
@@ -14503,7 +14662,9 @@ if (window.__sw) {
       // subject's move along them, not along the scene's x and y (a board seen from above: a paper)
       axes: READER.grip && READER.grip.R ? { R: READER.grip.R.slice(), U: READER.grip.U.slice() } : null,
       joints: READER.joints, live: READER.live ? { flex: READER.live.flex, turn: READER.live.turn.toArray() } : null, bodyOn: READER.bodyOn, bodySwitch: !!bodyHook() && !!st && !own, body: READER.body, carry: !!(st && st.carry), button: !!document.querySelector(`#${id} [data-hand]`), label: CAM_LABEL, window: !camWin.hidden, windowSide: camWin.classList.contains("left") ? "left" : "right", covers: !camWin.hidden && !!subjectOnStage(id) && underCam(subjectOnStage(id), camWin.offsetLeft),
-      moves: camMoves(document.getElementById(id)), fullButton: !!document.querySelector(`#${id} [data-full]`), fullTitle: (document.querySelector(`#${id} [data-full]`) || {}).title || "", full: READER.full, feet: READER.feet, note: camNote.textContent, fullMsg: READER.full ? fullSay("") : "" };
+      moves: camMoves(document.getElementById(id)), fullButton: !!document.querySelector(`#${id} [data-full]`), fullTitle: (document.querySelector(`#${id} [data-full]`) || {}).title || "", full: READER.full, feet: READER.feet, note: camNote.textContent, fullMsg: READER.full ? fullSay("") : "",
+      // the thing turned (alpha.83): the handles the hand moves now, and what the hand did
+      gestures: gestNow(id).map((e) => ({ dof: e.h.dof, ctl: e.h.ctl ?? null, per: e.h.per || 1, range: hRange(e.st.id, e.h), value: hGet(e.st, e.h) })), gestDefined: gestOf(id), gest: READER.gest ? { turned: READER.gest.turned } : null };
   };
   // where the model's place() puts the subject the hand holds for a move of the hand (right, up, cm), less where it
   // rested when taken: what the mouse's drag would give for the same move (js/sim-ui.js), a line or a range that ends
@@ -14517,6 +14678,9 @@ if (window.__sw) {
   window.__sw.readerFrame = (frame) => { const t = (frame.t ?? performance.now()) / 1000, held = readerFeed(frame, t); drawReader(frame); return held; };
   window.__sw.readerSet = (o) => { if ("fake" in o) { READER.fake = !!o.fake; readerBtns(readerOn()); } if ("joints" in o) READER.joints = !!o.joints; if ("bodyOn" in o) READER.bodyOn = !!o.bodyOn; if ("full" in o) { READER.full = !!o.full; READER.bodyGrip = null; readerBtns(readerOn()); } if (o.window) { camWin.hidden = false; camCan.style.display = ""; } readerSync(); };
   window.__sw.synthBody = synthBody;
+  // the simulator pages whose turn handles the hand moves (alpha.83), each with whether it has the switch
+  // (only the pages the paper's camera runs on, data-camera: the end-to-end simulator and Level 3 only, references/content.md “The camera”)
+  window.__sw.gestPages = () => Object.keys(PAGES).filter((id) => gestOf(id) && document.getElementById(id) && document.getElementById(id).classList.contains("sim") && camMoves(document.getElementById(id)).length).map((id) => ({ id, cam: !!document.querySelector(`#${id} [data-hand]`) }));
 }
 // ================================================================ where the reader can act
 // (the user, 2026-11-13: not always a drag of the subject: a point, the subject, a magnet, the array, a click; the goal is
@@ -14635,7 +14799,7 @@ const FB_H2C = "https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2can
 const PAGE_THUMBS = {"about":"thumbs/about.jpg","all":"thumbs/all.jpg","c1":"thumbs/c1.jpg","c2":"thumbs/c2.jpg","c3":"thumbs/c3.jpg","demo":"thumbs/demo.jpg","exp-ablation":"thumbs/exp-ablation.jpg","exp-array":"thumbs/exp-array.jpg","exp-general":"thumbs/exp-general.jpg","exp-kg":"thumbs/exp-kg.jpg","exp-kg2":"thumbs/exp-kg2.jpg","exp-physics":"thumbs/exp-physics.jpg","exp-related":"thumbs/exp-related.jpg","exp-world":"thumbs/exp-world.jpg","explore":"thumbs/explore.jpg","gap":"thumbs/gap.jpg","how":"thumbs/how.jpg","idea":"thumbs/idea.jpg","inuse":"thumbs/inuse.jpg","level-1":"thumbs/level-1.jpg","motivation":"thumbs/motivation.jpg","open":"thumbs/open.jpg","s1":"thumbs/s1.jpg","s2":"thumbs/s2.jpg","s3":"thumbs/s3.jpg","see":"thumbs/see.jpg","sense2sim":"thumbs/sense2sim.jpg","sim-real":"thumbs/sim-real.jpg","start-2":"thumbs/start-2.jpg","start":"thumbs/start.jpg","terms":"thumbs/terms.jpg","title":"thumbs/title.jpg","use":"thumbs/use.jpg","who":"thumbs/who.jpg"};
 // what each answer says it came from: the simulation (its repository's name, Sense2Sim-<paper>), the kit's version and
 // the kind of reader (as picked on the first page, or the default kind marked "not picked"); tools/site.mjs fills S2S_SITE
-const S2S_SITE = {"name":"Sense2Sim-VECTOR","kit":"6.0.0-alpha.82","title":"VECTOR: Velocity Based Temperature-field Monitoring with Distributed Acoustic Devices","url":"https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim-VECTOR/"};
+const S2S_SITE = {"name":"Sense2Sim-VECTOR","kit":"6.0.0-alpha.83","title":"VECTOR: Velocity Based Temperature-field Monitoring with Distributed Acoustic Devices","url":"https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim-VECTOR/"};
 const s2sSite = () => S2S_SITE.name || (location.pathname.match(/\/(Sense2Sim-[^/]+)\//) || [])[1] || document.title;
 const s2sKit = () => S2S_SITE.kit || "";
 // the paper's title and the simulation's address: the sheet's "site" cell is the title, linked to the address
@@ -14711,6 +14875,44 @@ async function s2sSend(payload) {
 if (typeof document !== "undefined") { try { if (JSON.parse(localStorage.getItem(s2sUnsent()) || "[]").length) s2sFlush(); } catch (e) {} }
 let S2S_REMIND = () => {}; // says the notes not sent yet (set below; js/survey.js calls it after the last questions)
 let S2S_SURVEY = false;     // the user study's questions are on (js/survey.js): the last page's reminder waits for them
+// User study mode (the owner, 2026-11-21: “user study mode，在这里加一个这个勾选框，小一点，隐藏一点。disable的时候只开think aloud
+// 功能，打分和问卷就不要了”): a small box on the page that asks who the reader is; on, the authors' scores
+// (js/author.js) and the study's questions (js/survey.js) run; off, the think-aloud notes alone. Off unless turned on
+// in this browser ("s2s-study"; the owner: “默认不开”); ?study=1 or ?study=0 in the address sets it.
+const S2S_STUDY_KEY = "s2s-study";
+function s2sStudy() {
+  const q = typeof location !== "undefined" ? new URLSearchParams(location.search).get("study") : null;
+  if (q === "0" || q === "1") return q === "1";
+  try { const v = localStorage.getItem(S2S_STUDY_KEY); if (v === "0" || v === "1") return v === "1"; } catch (e) {}
+  return false;
+}
+// The page that asks who the reader is, in a reader's browser (not the kit's own, navigator.webdriver, unless the address
+// asks, ?feedback=1, ?survey=1 or ?author=1), with or without the notes: the pages after it wait for a kind picked, and
+// it holds the box of User study mode.
+(function pickFirst() {
+  if (typeof document === "undefined") return;
+  const q = new URLSearchParams(location.search);
+  if (navigator.webdriver && !["feedback", "survey", "author"].some((k) => q.get(k) === "1")) return;
+  { const st = document.createElement("style"); st.textContent = `.goal .gask.fbnudge { animation: fbnudge .6s cubic-bezier(.36,.07,.19,.97) 2; box-shadow: 0 0 0 3px #ff8a5b, 0 0 24px rgba(255,138,91,.6) !important; }
+@keyframes fbnudge { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); } }
+@media (prefers-reduced-motion: reduce) { .goal .gask.fbnudge { animation: none; } }
+.fbstudy { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font: 13px/1.2 system-ui, sans-serif; color: var(--ink-3, #888); opacity: .55; cursor: pointer; user-select: none; }
+.fbstudy:hover, .fbstudy:focus-within { opacity: 1; } .fbstudy input { width: 13px; height: 13px; margin: 0; accent-color: var(--accent, #7a5a12); }`; document.head.append(st); }
+  // the page that asks who the reader is: the pages after it wait for a kind picked, none picked for the reader
+  // (the owner, 2026-11-21: “五个身份不要默认给我选paper author，默认是啥都不选，要让用户选，选了才能往下”): its question
+  // is shown again, with a shake
+  const askAt = slides.findIndex((x) => x.querySelector(".goal.pick .gwho [data-reader]"));
+  const unpicked = () => askAt >= 0 && cur === askAt && !(typeof rdPick !== "undefined" && rdPick);
+  const nudgePick = () => { const q = slides[askAt].querySelector(".goal.pick .gask"); if (!q) return; q.classList.remove("fbnudge"); void q.offsetWidth; q.classList.add("fbnudge"); };
+  const fwdP = forward; forward = function () { if (unpicked()) return nudgePick(); fwdP(); };
+  const goP = go; go = function (i, s) { if (unpicked() && i > cur) return nudgePick(); goP(i, s); };
+  // the box of User study mode, small, under the kinds of reader; a change starts the page again
+  { const at = askAt >= 0 && slides[askAt].querySelector(".goal.pick");
+    if (at) { const l = document.createElement("label"); l.className = "fbstudy"; l.title = "On: the authors' scores and the study's questions. Off: think-aloud notes only.";
+      l.innerHTML = `<input type="checkbox"${s2sStudy() ? " checked" : ""}> User study mode`; at.append(l);
+      const box = l.querySelector("input"); box.addEventListener("click", (e) => e.stopPropagation());
+      box.addEventListener("change", () => { try { localStorage.setItem(S2S_STUDY_KEY, box.checked ? "1" : "0"); } catch (e) {} const u = new URL(location.href); u.searchParams.delete("study"); location.replace(u.toString()); }); } }
+})();
 (function feedback() {
   // not in the kit's own browsers (shots, look, the checks: navigator.webdriver) unless asked for, ?feedback=1; ?feedback=0 turns it off
   if (typeof document === "undefined" || /[?&]feedback=0(&|$)/.test(location.search) || (navigator.webdriver && !/[?&]feedback=1(&|$)/.test(location.search))) return;
@@ -15048,7 +15250,7 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   // remembers it (sessionStorage), so a reload goes on
   const PICKED = "s2s-authors-picked";
   let picked = false; try { picked = sessionStorage.getItem(PICKED) === "1"; } catch (e) {}
-  const on = () => forced || (!tool && picked && typeof rdPick !== "undefined" && rdPick === "authors");
+  const on = () => forced || (!tool && s2sStudy() && picked && typeof rdPick !== "undefined" && rdPick === "authors"); // (User study mode off: no scores, js/feedback.js)
   document.addEventListener("click", (e) => {
     const c = e.target.closest && e.target.closest(".gwho [data-reader]"); if (!c) return;
     setTimeout(() => { picked = typeof rdPick !== "undefined" && rdPick === "authors"; try { if (picked) sessionStorage.setItem(PICKED, "1"); else sessionStorage.removeItem(PICKED); } catch (e2) {} paint(); }, 0);
@@ -15105,11 +15307,11 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
 .aucell { all: unset; cursor: pointer; height: 22px; border-radius: 3px; background: rgba(128,128,128,.25); font: 600 12px/22px system-ui, sans-serif; text-align: center; color: #fff; }
 .auheat .aulvs { display: grid; gap: 2px; min-width: 420px; font-size: 13px; opacity: .75; } .auheat .aulvs span { border-top: 2px solid rgba(128,128,128,.35); padding-top: 2px; }
 @property --auang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
-.auintro { border: 3px solid transparent !important; background: linear-gradient(var(--panel, #fffdf8), var(--panel, #fffdf8)) padding-box, conic-gradient(from var(--auang), #d9f272, #6b98ff, #c7a2ff, #ff8a5b, #d9f272) border-box !important; animation: auturn 3.2s linear infinite; }
-.auintro.aushake { animation: auturn 3.2s linear infinite, aushake .5s cubic-bezier(.36,.07,.19,.97) 2; }
+.auintro, .aucard { border: 3px solid transparent !important; background: linear-gradient(var(--panel, #fffdf8), var(--panel, #fffdf8)) padding-box, conic-gradient(from var(--auang), #d9f272, #6b98ff, #c7a2ff, #ff8a5b, #d9f272) border-box !important; animation: auturn 3.2s linear infinite; }
+.auintro.aushake, .aucard.aushake { animation: auturn 3.2s linear infinite, aushake .5s cubic-bezier(.36,.07,.19,.97) 2; }
 @keyframes auturn { to { --auang: 360deg; } }
 @keyframes aushake { 10%, 90% { translate: -2px 0; } 20%, 80% { translate: 4px 0; } 30%, 50%, 70% { translate: -8px 0; } 40%, 60% { translate: 8px 0; } }
-@media (prefers-reduced-motion: reduce) { .auintro, .auintro.aushake { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .auintro, .auintro.aushake, .aucard, .aucard.aushake { animation: none; } }
 .auintro { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 74; width: min(620px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--panel, #fffdf8); color: var(--ink, #1d2129); border: 1px solid rgba(128,128,128,.35); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.3); padding: 22px 26px; display: grid; gap: 10px; font: 18px/1.5 system-ui, sans-serif; box-sizing: border-box; }
 .auintro h2 { margin: 0; font: 600 26px ${AU_FONT}; } .auintro p, .auintro ol, .auintro ul { margin: 0; } .auintro ol, .auintro ul { padding-left: 20px; display: grid; gap: 4px; }
 .auintro .aurow { display: flex; gap: 12px; align-items: center; } .auintro .aurow canvas { flex: none; }
@@ -15328,7 +15530,11 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   pill.onclick = (e) => { e.stopPropagation(); openCard(null); };
   // the medal: the certificate once every page is rated (or the authors' scores came with the simulation); before, this page's card
   seal.onclick = (e) => { e.stopPropagation(); if (!on() || rated() === rateable().length) openCert(); else if (card) closeCard(); else openCard(null); };
-  // a press outside the card closes it, and only that: the page does not go on
+  // a press outside the card closes it, and only that: the page does not go on. A way on to a later page (→, the next
+  // page's button, a page further on the bar) while this page's scores are not both given shakes the card instead, as
+  // the intro does (the owner, 2026-11-21: “点别处还是一样关掉，只有和下一页有关的操作才强调”)
+  const nudgeCard = () => { if (!card) return false; card.classList.remove("aushake"); void card.offsetWidth; card.classList.add("aushake"); return true; };
+  const unscored = () => !!card && !done();
   for (const ev of ["pointerdown", "mousedown", "click"]) document.addEventListener(ev, (e) => {
     if (!card || introOpen || card.contains(e.target) || seal.contains(e.target)) return;
     e.stopPropagation(); e.preventDefault(); if (ev === "click") closeCard();
@@ -15342,12 +15548,12 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   forward = function () {
     if (introOpen) return void nudgeIntro(); // the card that says how it goes: the pages wait for “Start”
     if (on() && step >= stepsOf(slides[cur]) && !held() && !popOpen() && !endOpen() && !(typeof rdAsking === "function" && rdAsking())) {
-      if (card && resume) { if (done()) { const r = resume; closeCard(); r(); } return; }
+      if (card && resume) { if (done()) { const r = resume; closeCard(); r(); } else nudgeCard(); return; }
       if (!done()) { openCard(() => forward()); return; } // once scored, → again: the part's questions may come next (js/survey.js)
     }
     fwd0();
   };
-  const go0 = go; go = function (i, s) { if (introOpen && i !== cur) return void nudgeIntro(); if (card) closeCard(); go0(i, s); paint(); };
+  const go0 = go; go = function (i, s) { if (introOpen && i !== cur) return void nudgeIntro(); if (i > cur && unscored()) return void nudgeCard(); if (card) closeCard(); go0(i, s); paint(); };
   // keys in the card: 1–5 give Accurate, then Quality; the deck's keys stay out of the certificate
   document.addEventListener("keydown", (e) => {
     // the how-it-goes card open: the deck's keys wait (stopped, never prevented: a field of another card, the name's,
@@ -15442,6 +15648,7 @@ const SURVEY = [
   if (typeof document === "undefined") return;
   const qs = new URLSearchParams(location.search);
   if (qs.get("survey") === "0" || (navigator.webdriver && qs.get("survey") !== "1")) return;
+  if (!s2sStudy() && qs.get("survey") !== "1") return; // User study mode off: the think-aloud notes alone (js/feedback.js)
   const site = s2sSite(), KEY = () => "s2s-survey:" + site + ":" + s2sUser();
   // what is answered is kept by reader: another name at the same machine (a study's shared computer) is asked afresh
   const read = () => { try { return JSON.parse(localStorage.getItem(KEY()) || "{}") || {}; } catch (e) { return {}; } };
@@ -15589,7 +15796,7 @@ const SURVEY = [
   // the page that asks who the reader is: the pages after it wait for a kind picked (the owner, 2026-11-21: “即使没有选定，
   // 也能往下走”): its question is shown again, and nothing goes on (the questions differ by the kind)
   const askAt = slides.findIndex((x) => x.querySelector(".goal.pick .gwho [data-reader]"));
-  const unpicked = () => askAt >= 0 && cur === askAt && !(typeof rdPick !== "undefined" && rdPick);
+  const unpicked = () => false; // (the pages wait for a kind picked in js/feedback.js, for every reader, the study's or not)
   const nudge = () => { const q = slides[askAt].querySelector(".goal.pick .gask"); if (!q) return; q.classList.remove("svnudge"); void q.offsetWidth; q.classList.add("svnudge"); };
   const ncss = document.createElement("style");
   ncss.textContent = `.goal .gask.svnudge { animation: svnudge .6s cubic-bezier(.36,.07,.19,.97) 2; box-shadow: 0 0 0 3px #ff8a5b, 0 0 24px rgba(255,138,91,.6) !important; }

@@ -14732,6 +14732,10 @@ let S2S_SURVEY = false;     // the user study's questions are on (js/survey.js):
 #fbmine { border: 0; cursor: pointer; }
 .fbcard, .fbnote { position: fixed; z-index: 62; background: var(--panel, #fffdf8); color: var(--ink, #1d2129); border: 1px solid rgba(128,128,128,.35); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.2); font: 17px/1.45 system-ui, sans-serif; }
 .fbcard { right: calc(max(14px, env(safe-area-inset-right, 0px)) + 56px); bottom: calc(64px + env(safe-area-inset-bottom, 0px)); width: min(400px, 84vw); padding: 14px 16px; display: grid; gap: 8px; }
+.fbcard, .fbintro-frame { border: 3px solid transparent !important; background: linear-gradient(var(--panel, #fffdf8), var(--panel, #fffdf8)) padding-box, conic-gradient(from var(--fbang), #d9f272, #6b98ff, #c7a2ff, #ff8a5b, #d9f272) border-box !important; animation: fbturn 3.2s linear infinite; box-shadow: 0 10px 30px rgba(0,0,0,.25), 0 0 26px rgba(199,162,255,.45) !important; }
+.fbcard.fbshake { animation: fbturn 3.2s linear infinite, fbshake .5s cubic-bezier(.36,.07,.19,.97) 2; }
+@keyframes fbshake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); } }
+@media (prefers-reduced-motion: reduce) { .fbcard, .fbcard.fbshake { animation: none; } }
 .fbcard h3 { margin: 0; font-size: 19px; } .fbcard p { margin: 0; }
 .fbbtn { font: 500 17px system-ui, sans-serif; border: 1px solid rgba(128,128,128,.4); background: transparent; color: inherit; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
 .fbbtn.fbprimary { background: #7a5a12; border-color: #7a5a12; color: #fffdf8; }
@@ -14826,16 +14830,21 @@ pre.fbpre { background: rgba(128,128,128,.08); border-radius: 8px; padding: 10px
   let idleT = 0; const wake = () => { ta.classList.remove("fbidle"); clearTimeout(idleT); idleT = setTimeout(() => ta.classList.add("fbidle"), 3500); };
   addEventListener("pointermove", wake, { passive: true }); wake();
   // the first time: the card beside the button
+  // on every visit (the owner, 2026-11-21: “每次都出现”), until “Got it”: the pages wait for it (sessionStorage: a reload
+  // in the same visit does not show it again)
   const firstCard = () => {
-    const key = "s2s-thinkaloud:" + s2sUser(); let seen = false; try { seen = !!localStorage.getItem(key); } catch (e) {}
+    const key = "s2s-thinkaloud-seen"; let seen = false; try { seen = !!sessionStorage.getItem(key); } catch (e) {}
     if (seen || document.querySelector(".fbcard")) return;
     const c = document.createElement("div"); c.className = "fbcard"; c.setAttribute("role", "note");
     c.innerHTML = `<h3>Think aloud</h3><p>Tell us what you think as you read. Press this button, drag a box over anything on the page, or skip the box and write about the whole page.</p><p>Write as many notes on each page as you like.</p><p class="fbmuted">When you are done, “My notes” beside the button lets you review, change and send them all.</p><div class="fbrow"><button class="fbbtn fbprimary" type="button">Got it</button></div>`;
     document.body.append(c);
-    const gone = () => { c.remove(); try { localStorage.setItem(key, "1"); } catch (e) {} };
+    const gone = () => { c.remove(); try { sessionStorage.setItem(key, "1"); } catch (e) {} };
     c.querySelector("button").onclick = gone; ta.addEventListener("click", gone, { once: true });
   };
-  firstCard(); addEventListener("s2s-user", () => { document.querySelector(".fbcard")?.remove(); firstCard(); });
+  firstCard();
+  // the card open: the pages wait for “Got it”, and the card says so (a shake)
+  const nudgeCard = () => { const c = document.querySelector(".fbcard"); if (!c) return false; c.classList.remove("fbshake"); void c.offsetWidth; c.classList.add("fbshake"); c.querySelector("button")?.focus(); return true; };
+  const fwdF = forward; forward = function () { if (nudgeCard()) return; fwdF(); };
   // the picture of the window, as drawn, for a note
   let h2c = null;
   const loadH2C = () => h2c || (h2c = new Promise((ok, no) => { if (window.html2canvas) return ok(window.html2canvas); const s = document.createElement("script"); s.src = FB_H2C; s.onload = () => ok(window.html2canvas); s.onerror = () => { h2c = null; s.remove(); no(new Error("html2canvas did not load")); }; document.head.append(s); }));
@@ -14952,7 +14961,7 @@ pre.fbpre { background: rgba(128,128,128,.08); border-radius: 8px; padding: 10px
   S2S_REMIND = remind;
   addEventListener("beforeunload", (e) => { if (!notes.length) return; e.preventDefault(); e.returnValue = ""; setTimeout(remind, 600); });
   let lastT = 0; const goF = go;
-  go = function (i, s) { goF(i, s); clearTimeout(lastT); if (cur === slides.length - 1 && !S2S_SURVEY) lastT = setTimeout(() => { if (cur === slides.length - 1) remind(); }, 3000); };
+  go = function (i, s) { if (i !== cur && nudgeCard()) return; goF(i, s); clearTimeout(lastT); if (cur === slides.length - 1 && !S2S_SURVEY) lastT = setTimeout(() => { if (cur === slides.length - 1) remind(); }, 3000); };
   // the board of all the pages
   let closeBoard = () => {};
   function openBoard(pick) {
@@ -15093,6 +15102,12 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
 .auheat .auhr { display: grid; grid-template-columns: 70px 1fr; gap: 8px; align-items: center; } .auheat .aucells { display: grid; gap: 2px; min-width: 420px; }
 .aucell { all: unset; cursor: pointer; height: 22px; border-radius: 3px; background: rgba(128,128,128,.25); font: 600 12px/22px system-ui, sans-serif; text-align: center; color: #fff; }
 .auheat .aulvs { display: grid; gap: 2px; min-width: 420px; font-size: 13px; opacity: .75; } .auheat .aulvs span { border-top: 2px solid rgba(128,128,128,.35); padding-top: 2px; }
+@property --auang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.auintro { border: 3px solid transparent !important; background: linear-gradient(var(--panel, #fffdf8), var(--panel, #fffdf8)) padding-box, conic-gradient(from var(--auang), #d9f272, #6b98ff, #c7a2ff, #ff8a5b, #d9f272) border-box !important; animation: auturn 3.2s linear infinite; }
+.auintro.aushake { animation: auturn 3.2s linear infinite, aushake .5s cubic-bezier(.36,.07,.19,.97) 2; }
+@keyframes auturn { to { --auang: 360deg; } }
+@keyframes aushake { 10%, 90% { translate: -2px 0; } 20%, 80% { translate: 4px 0; } 30%, 50%, 70% { translate: -8px 0; } 40%, 60% { translate: 8px 0; } }
+@media (prefers-reduced-motion: reduce) { .auintro, .auintro.aushake { animation: none; } }
 .auintro { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 74; width: min(620px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--panel, #fffdf8); color: var(--ink, #1d2129); border: 1px solid rgba(128,128,128,.35); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.3); padding: 22px 26px; display: grid; gap: 10px; font: 18px/1.5 system-ui, sans-serif; box-sizing: border-box; }
 .auintro h2 { margin: 0; font: 600 26px ${AU_FONT}; } .auintro p, .auintro ol, .auintro ul { margin: 0; } .auintro ol, .auintro ul { padding-left: 20px; display: grid; gap: 4px; }
 .auintro .aurow { display: flex; gap: 12px; align-items: center; } .auintro .aurow canvas { flex: none; }
@@ -15253,7 +15268,8 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   const nextToScore = () => { const R = rateable(), a = R.find((p) => p.i >= cur && !done(p.id)) || R.find((p) => !done(p.id)) || R[0]; return a ? a.i : -1; };
   // the first time an author comes: what the scores are, and how it goes (the owner, 2026-11-21: “第一页应该有一个解释”)
   let introOpen = false;
-  const introKey = () => "s2s-author-intro:" + s2sUser(), introSeen = () => { try { return !!localStorage.getItem(introKey()); } catch (e) { return introShown; } };
+  // on every visit once “Paper authors” is picked (the owner, 2026-11-21: “每次都出现”): kept for the visit only
+  const introKey = () => "s2s-author-intro-seen", introSeen = () => { try { return !!sessionStorage.getItem(introKey()); } catch (e) { return introShown; } };
   let introShown = false, sealKey = "";
   function intro() {
     if (introOpen) return; introOpen = true;
@@ -15269,8 +15285,8 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
       <div style="display:flex;justify-content:flex-end"><button class="aubtn auprimary" type="button">Start</button></div>`;
     c.querySelector(".aumini").append(flat(52, 4.5, 3.5));
     document.body.append(sh, c);
-    const close = () => { sh.remove(); c.remove(); introOpen = false; introShown = true; try { localStorage.setItem(introKey(), "1"); } catch (e) {} paint(); };
-    c.querySelector("button").onclick = (e) => { e.stopPropagation(); close(); }; sh.onclick = (e) => { e.stopPropagation(); close(); };
+    const close = () => { sh.remove(); c.remove(); introOpen = false; introShown = true; try { sessionStorage.setItem(introKey(), "1"); } catch (e) {} paint(); };
+    c.querySelector("button").onclick = (e) => { e.stopPropagation(); close(); }; sh.onclick = (e) => { e.stopPropagation(); nudgeIntro(); }; // only “Start” closes it
     c.addEventListener("click", (e) => e.stopPropagation()); c.addEventListener("keydown", (e) => { e.stopPropagation(); if (e.key === "Escape") close(); });
     c.querySelector("button").focus();
   }
@@ -15320,14 +15336,16 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   const held = () => typeof heldClip === "function" && !!heldClip(slides[cur]);
   AU_BLOCKS = () => on() && step >= stepsOf(slides[cur]) && !held() && !done();
   const fwd0 = forward;
+  const nudgeIntro = () => { const c = document.querySelector(".auintro"); if (!c) return false; c.classList.remove("aushake"); void c.offsetWidth; c.classList.add("aushake"); c.querySelector("button")?.focus(); return true; };
   forward = function () {
+    if (introOpen) return void nudgeIntro(); // the card that says how it goes: the pages wait for “Start”
     if (on() && step >= stepsOf(slides[cur]) && !held() && !popOpen() && !endOpen() && !(typeof rdAsking === "function" && rdAsking())) {
       if (card && resume) { if (done()) { const r = resume; closeCard(); r(); } return; }
       if (!done()) { openCard(() => forward()); return; } // once scored, → again: the part's questions may come next (js/survey.js)
     }
     fwd0();
   };
-  const go0 = go; go = function (i, s) { if (card) closeCard(); go0(i, s); paint(); };
+  const go0 = go; go = function (i, s) { if (introOpen && i !== cur) return void nudgeIntro(); if (card) closeCard(); go0(i, s); paint(); };
   // keys in the card: 1–5 give Accurate, then Quality; the deck's keys stay out of the certificate
   document.addEventListener("keydown", (e) => {
     // the how-it-goes card open: the deck's keys wait (stopped, never prevented: a field of another card, the name's,
@@ -15385,7 +15403,8 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
 // opened) and Exploration when the reader says they are done exploring (the table's “No, end here”; the owner,
 // 2026-11-21: “在这里比较合适”), then Research inspiration (sensing researchers only) and Overall at the last page.
 // The bar at the foot of the page marks where each set comes (the owner: “把questionnaire也放到下面坐标bar上，用其他颜
-// 色表示”): an orange diamond after its page, hollow until answered. Each set asks for its ratings, 1–5 or N/A
+// 色表示”): an orange diamond after its page, hollow until answered; pressed, it opens its sets (the owner: “问卷也能通过
+// 点击呼出”), those answered with their answers, to change. Each set asks for its ratings, 1–5 or N/A
 // (N/A counts in no average), and a few words; the next page waits until every rating is given. A set already
 // answered is not asked again (kept in the browser). Each set is sent as soon as it is answered to the lab's
 // collection (FEEDBACK_URL, js/feedback.js; tools/feedback/Code.gs, the sheet's tab “survey”, one row for each answer).
@@ -15444,48 +15463,68 @@ const SURVEY = [
 .svpicks { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 4px 14px; } .svpick { display: flex; gap: 8px; align-items: center; font-size: 17px; }
 .svpick input[type=text] { flex: 1; min-width: 0; font: 17px system-ui, sans-serif; color: inherit; background: rgba(128,128,128,.08); border: 1px solid rgba(128,128,128,.35); border-radius: 6px; padding: 3px 6px; }
 .svcard textarea { width: 100%; min-height: 70px; resize: vertical; box-sizing: border-box; font: 17px/1.45 system-ui, sans-serif; color: inherit; background: rgba(128,128,128,.08); border: 1px solid rgba(128,128,128,.35); border-radius: 8px; padding: 8px; }
-.svfoot { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; } .svfoot span { flex: 1; font-size: 16px; opacity: .7; }
+.svset { display: grid; gap: 14px; } .svsep { border: 0; border-top: 3px dashed rgba(255,138,91,.55); margin: 8px 0; width: 100%; }
+.svfoot { position: sticky; bottom: -20px; margin: 0 -22px -20px; padding: 12px 22px; background: var(--panel, #fffdf8); border-top: 1px solid rgba(128,128,128,.25); display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; } .svfoot span { flex: 1; font-size: 16px; opacity: .7; }
 .svbtn { font: 600 17px system-ui, sans-serif; border: 1px solid var(--accent, #d6ad55); background: var(--accent, #d6ad55); color: var(--bg, #0f1826); border-radius: 8px; padding: 7px 14px; cursor: pointer; } .svbtn:disabled { opacity: .4; cursor: default; }`;
   const st = document.createElement("style"); st.textContent = css; document.head.append(st);
   const kinds = { universe: (s) => s.dataset.kind === "kb", world: (s) => s.dataset.kind === "world" };
   const has = { intro: slides.some((s) => levelOf(s) === "1"), sim: slides.some((s) => levelOf(s) === "2"), universe: slides.some(kinds.universe), world: slides.some(kinds.world), explore: slides.some((s) => levelOf(s) === "3" && s.dataset.home && !s.dataset.kind) };
   const lastOf = (lv) => { let k = -1; slides.forEach((s, i) => { if (levelOf(s) === lv) k = i; }); return k; };
   const seen = new Set(); // the parts this reader met on this visit
+  const LIT = ["universe", "world"], END = ["inspire", "overall"]; // the table's groups: the literature's, the end's
   const partOf = (s) => kinds.universe(s) ? "universe" : kinds.world(s) ? "world" : levelOf(s) === "1" ? "intro" : levelOf(s) === "2" ? "sim" : (levelOf(s) === "3" && s.dataset.home && !s.dataset.kind) ? "explore" : "";
   const researcher = () => (typeof rdKind !== "undefined" && rdKind === "researchers") || (typeof rdPick !== "undefined" && rdPick === "researchers");
   const want = (k) => !done[k] && (k === "overall" || (k === "inspire" ? researcher() : has[k]));
   let open = false;
-  // one set of questions; then() once it is answered
-  function ask(key, then) {
-    const S = SURVEY.find((x) => x.key === key); if (!S || open) return;
-    open = true; const ans = { r: {}, picks: new Set(), other: "", text: "" };
-    const rows = S.q === "parts" ? SURVEY.filter((x) => ["intro", "sim", "explore", "universe", "world"].includes(x.key) && has[x.key]).map((x) => [x.title, x.title]) : S.q;
+  // one card of questions: one set, or several one under another, scrolled (the owner, 2026-11-21: “放到一起一页滚动”);
+  // then() once every set in it is answered. Each set is kept and sent as its own.
+  function ask(keys, then) {
+    keys = [].concat(keys).filter((k) => SURVEY.some((x) => x.key === k));
+    if (!keys.length || open) return then && then();
+    open = true;
     const order = ["intro", "sim", "universe", "world", "explore", "inspire", "overall"].filter((k) => k === "overall" || (k === "inspire" ? researcher() : has[k]));
+    const sets = keys.map((key, n) => { const S = SURVEY.find((x) => x.key === key);
+      return { key, n, S, ans: { r: {}, picks: new Set() }, rows: S.q === "parts" ? SURVEY.filter((x) => ["intro", "sim", "explore", "universe", "world"].includes(x.key) && has[x.key]).map((x) => [x.title, x.title]) : S.q }; });
     const sh = document.createElement("div"); sh.className = "svshade";
-    const c = document.createElement("div"); c.className = "svcard"; c.setAttribute("role", "dialog"); c.setAttribute("aria-modal", "true"); c.setAttribute("aria-labelledby", "svh");
-    const scale = (i) => `<div class="svsc${S.na ? "" : " svnona"}" role="radiogroup" aria-label="${esc(rows[i][0])}">${S.na ? `<button type="button" role="radio" aria-checked="false" class="svna" data-i="${i}" data-v="na">N/A</button>` : ""}${[1, 2, 3, 4, 5].map((v) => `<button type="button" role="radio" aria-checked="false" data-i="${i}" data-v="${v}">${v}</button>`).join("")}</div><div class="svends${S.na ? "" : " svnona"}"><span class="svlo">1 · strongly disagree</span><span class="svhi">5 · strongly agree</span></div>`;
-    c.innerHTML = `<div><div class="sveye">Your view · ${order.indexOf(key) + 1} of ${order.length}</div><h2 id="svh">${esc(S.title)}</h2><p class="svabout">${esc(S.about)}</p></div>
-      ${S.picks ? `<div class="svq"><p class="svask">Which studies did you try?</p><div class="svpicks">${S.picks.map((p, i) => `<label class="svpick"><input type="checkbox" data-p="${esc(p)}"> ${esc(p)}</label>`).join("")}<label class="svpick"><input type="checkbox" data-p="Other"> Other: <input type="text" aria-label="Other study" data-other></label><label class="svpick"><input type="checkbox" data-p="None"> None</label></div></div>` : ""}
+    const c = document.createElement("div"); c.className = "svcard"; c.setAttribute("role", "dialog"); c.setAttribute("aria-modal", "true"); c.setAttribute("aria-labelledby", "svh0");
+    const scale = (t, i) => `<div class="svsc${t.S.na ? "" : " svnona"}" role="radiogroup" aria-label="${esc(t.rows[i][0])}">${t.S.na ? `<button type="button" role="radio" aria-checked="false" class="svna" data-s="${t.n}" data-i="${i}" data-v="na">N/A</button>` : ""}${[1, 2, 3, 4, 5].map((v) => `<button type="button" role="radio" aria-checked="false" data-s="${t.n}" data-i="${i}" data-v="${v}">${v}</button>`).join("")}</div><div class="svends${t.S.na ? "" : " svnona"}"><span class="svlo">1 · strongly disagree</span><span class="svhi">5 · strongly agree</span></div>`;
+    const part = (t) => { const S = t.S, at = order.indexOf(t.key) + 1;
+      return `<section class="svset" data-s="${t.n}"><div><div class="sveye">Your view · ${at} of ${order.length}</div><h2 id="svh${t.n}">${esc(S.title)}</h2><p class="svabout">${esc(S.about)}</p></div>
+      ${S.picks ? `<div class="svq"><p class="svask">Which studies did you try?</p><div class="svpicks">${S.picks.map((p) => `<label class="svpick"><input type="checkbox" data-s="${t.n}" data-p="${esc(p)}"> ${esc(p)}</label>`).join("")}<label class="svpick"><input type="checkbox" data-s="${t.n}" data-p="Other"> Other: <input type="text" aria-label="Other study" data-s="${t.n}" data-other></label><label class="svpick"><input type="checkbox" data-s="${t.n}" data-p="None"> None</label></div></div>` : ""}
       ${S.ask ? `<p class="svask">${esc(S.ask)}</p>` : ""}
-      ${rows.map((r, i) => `<div class="svq"><div class="svlab">${S.q === "parts" ? `<b>${esc(r[0])}</b>` : `<b>${esc(r[0])}</b><span>${esc(r[1])}</span>`}</div>${scale(i)}</div>`).join("")}
-      <div class="svq"><label for="svtext">${esc(S.text)}${S.optional ? " (optional)" : ""}</label><textarea id="svtext"></textarea></div>
-      <div class="svfoot"><span>Every rating is needed; N/A when it does not apply.</span><button class="svbtn" type="button" disabled>Continue</button></div>`;
+      ${t.rows.map((r, i) => `<div class="svq"><div class="svlab">${S.q === "parts" ? `<b>${esc(r[0])}</b>` : `<b>${esc(r[0])}</b><span>${esc(r[1])}</span>`}</div>${scale(t, i)}</div>`).join("")}
+      <div class="svq"><label for="svtext${t.n}">${esc(S.text)}${S.optional ? " (optional)" : ""}</label><textarea id="svtext${t.n}" data-s="${t.n}"></textarea></div></section>`; };
+    c.innerHTML = sets.map(part).join(`<hr class="svsep">`) + `<div class="svfoot"><span>Every rating is needed; N/A when it does not apply.${sets.length > 1 ? ` ${sets.length} sets: scroll for all.` : ""}</span><button class="svbtn" type="button" disabled>Continue</button></div>`;
     document.body.append(sh, c);
-    const next = c.querySelector(".svbtn"), ready = () => rows.every((_, i) => ans.r[i] != null) && (!S.picks || ans.picks.size > 0);
-    c.querySelectorAll(".svsc button").forEach((b) => b.onclick = (e) => { e.stopPropagation(); const i = +b.dataset.i; ans.r[i] = b.dataset.v; c.querySelectorAll(`.svsc button[data-i="${i}"]`).forEach((x) => { const on = x === b; x.classList.toggle("svon", on); x.setAttribute("aria-checked", String(on)); }); next.disabled = !ready(); });
-    c.querySelectorAll(".svpick input[type=checkbox]").forEach((b) => b.onchange = () => {
-      if (b.dataset.p === "None" && b.checked) c.querySelectorAll(".svpick input[type=checkbox]").forEach((x) => { if (x !== b) x.checked = false; });
-      else if (b.checked) c.querySelector('.svpick input[data-p="None"]').checked = false;
-      ans.picks = new Set([...c.querySelectorAll(".svpick input[type=checkbox]:checked")].map((x) => x.dataset.p)); next.disabled = !ready(); });
-    const other = c.querySelector("[data-other]"); if (other) other.addEventListener("input", () => { const cb = c.querySelector('.svpick input[data-p="Other"]'); if (other.value.trim() && !cb.checked) { cb.checked = true; cb.onchange(); } });
+    const next = c.querySelector(".svbtn"), ready = () => sets.every((t) => t.rows.every((_, i) => t.ans.r[i] != null) && (!t.S.picks || t.ans.picks.size > 0));
+    c.querySelectorAll(".svsc button").forEach((b) => b.onclick = (e) => { e.stopPropagation(); const t = sets[+b.dataset.s], i = +b.dataset.i; t.ans.r[i] = b.dataset.v;
+      c.querySelectorAll(`.svsc button[data-s="${t.n}"][data-i="${i}"]`).forEach((x) => { const on = x === b; x.classList.toggle("svon", on); x.setAttribute("aria-checked", String(on)); }); next.disabled = !ready(); });
+    for (const t of sets) {
+      const boxes = [...c.querySelectorAll(`.svpick input[type=checkbox][data-s="${t.n}"]`)], none = boxes.find((x) => x.dataset.p === "None");
+      boxes.forEach((b) => b.onchange = () => {
+        if (b === none && b.checked) boxes.forEach((x) => { if (x !== b) x.checked = false; }); else if (b.checked && none) none.checked = false;
+        t.ans.picks = new Set(boxes.filter((x) => x.checked).map((x) => x.dataset.p)); next.disabled = !ready(); });
+      const other = c.querySelector(`[data-other][data-s="${t.n}"]`);
+      if (other) other.addEventListener("input", () => { const cb = boxes.find((x) => x.dataset.p === "Other"); if (other.value.trim() && !cb.checked) { cb.checked = true; cb.onchange(); } });
+      // a set answered before (opened again from the bar): its answers as they were, to change
+      const was = done[t.key];
+      if (was) {
+        (was.r || []).forEach((x, i) => { const b = c.querySelector(`.svsc button[data-s="${t.n}"][data-i="${i}"][data-v="${x.a}"]`); if (b) b.click(); });
+        for (const b of boxes) b.checked = (was.picks || []).includes(b.dataset.p);
+        t.ans.picks = new Set(was.picks || []); if (other) other.value = was.other || ""; c.querySelector(`#svtext${t.n}`).value = was.text || "";
+      }
+    }
+    next.disabled = !ready();
     c.addEventListener("click", (e) => e.stopPropagation()); c.addEventListener("pointerdown", (e) => e.stopPropagation());
     c.addEventListener("keydown", (e) => e.stopPropagation()); sh.addEventListener("click", (e) => e.stopPropagation());
     next.onclick = (e) => {
       e.stopPropagation(); if (!ready()) return;
-      const at = new Date().toISOString(), text = c.querySelector("#svtext").value.trim(), oth = other ? other.value.trim() : "";
-      done[key] = { at, r: rows.map((r, i) => ({ q: r[0], a: ans.r[i] })), picks: [...ans.picks], other: oth, text }; keep();
-      send({ kind: "survey", site, ...s2sWhere(), version: s2sKit(), user: s2sUser(), reader: s2sReader(), ua: navigator.userAgent, section: S.title, at,
-        answers: [...rows.map((r, i) => ({ q: `${S.title} · ${r[0]}`, a: ans.r[i] === "na" ? "N/A" : +ans.r[i] })), ...(S.picks ? [{ q: `${S.title} · Studies tried`, a: [...ans.picks].map((p) => p === "Other" && oth ? `Other: ${oth}` : p).join("; ") }] : []), { q: `${S.title} · Feedback`, a: text }] });
+      for (const t of sets) {
+        const S = t.S, at = new Date().toISOString(), text = c.querySelector(`#svtext${t.n}`).value.trim(), o = c.querySelector(`[data-other][data-s="${t.n}"]`), oth = o ? o.value.trim() : "";
+        done[t.key] = { at, r: t.rows.map((r, i) => ({ q: r[0], a: t.ans.r[i] })), picks: [...t.ans.picks], other: oth, text }; keep();
+        send({ kind: "survey", site, ...s2sWhere(), version: s2sKit(), user: s2sUser(), reader: s2sReader(), ua: navigator.userAgent, section: S.title, at,
+          answers: [...t.rows.map((r, i) => ({ q: `${S.title} · ${r[0]}`, a: t.ans.r[i] === "na" ? "N/A" : +t.ans.r[i] })), ...(S.picks ? [{ q: `${S.title} · Studies tried`, a: [...t.ans.picks].map((p) => p === "Other" && oth ? `Other: ${oth}` : p).join("; ") }] : []), { q: `${S.title} · Feedback`, a: text }] });
+      }
       sh.remove(); c.remove(); open = false; if (then) then();
     };
     setTimeout(() => (c.querySelector(".svpick input") || c.querySelector(".svsc button")).focus(), 0);
@@ -15493,27 +15532,30 @@ const SURVEY = [
   // where each set comes, on the bar at the foot of the page (js/deck.js, #dots): after its page, an orange diamond,
   // hollow until answered; its sets named on pointing at it
   const mcss = document.createElement("style");
-  mcss.textContent = `#dots .svmark { flex: none; width: 16px; height: 36px; display: grid; place-items: center; position: relative; cursor: help; }
+  mcss.textContent = `#nav #dots .svmark { all: unset; flex: none; width: 18px; height: 36px; display: grid; place-items: center; position: relative; cursor: pointer; }
+#dots .svmark:hover i, #dots .svmark:focus-visible i { transform: rotate(45deg) scale(1.35); } #dots .svmark:focus-visible { outline: 2px solid #ff8a5b; outline-offset: 2px; border-radius: 4px; }
 #dots .svmark i { width: 11px; height: 11px; transform: rotate(45deg); border: 2px solid #ff8a5b; border-radius: 2px; box-sizing: border-box; box-shadow: 0 0 8px rgba(255,138,91,.7); animation: svpulse 1.6s ease-in-out infinite alternate; }
 #dots .svmark.svdone i { background: #ff8a5b; animation: none; box-shadow: none; }
 #dots .svmark b { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 600 13px system-ui, sans-serif; color: #1a1a1a; background: #ff8a5b; padding: 4px 9px; border-radius: 6px; opacity: 0; pointer-events: none; transition: opacity .12s; }
-#dots .svmark:hover b { opacity: 1; }
+#dots .svmark:hover b, #dots .svmark:focus-visible b { opacity: 1; }
 @keyframes svpulse { from { opacity: .55; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { #dots .svmark i { animation: none; } }`;
   document.head.append(mcss);
   function marks() {
     const bar = document.getElementById("dots"); if (!bar || typeof dotOf === "undefined") return;
     bar.querySelectorAll(".svmark").forEach((m) => m.remove());
-    const tb = slides.findIndex((x) => x.dataset.kind === "table"), at = new Map(), put = (i, k) => { if (i >= 0 && dotOf[i]) at.set(i, [...(at.get(i) || []), k]); };
-    if (has.intro) put(lastOf("1"), "intro"); if (has.sim) put(lastOf("2"), "sim");
-    if (tb >= 0) { for (const k of ["universe", "world", "explore"]) if (has[k]) put(tb, k); }
-    else { if (has.universe) put(slides.findIndex(kinds.universe), "universe"); if (has.world) put(slides.findIndex(kinds.world), "world"); }
-    if (researcher()) put(slides.length - 1, "inspire"); put(slides.length - 1, "overall");
-    for (const [i, keys] of at) {
-      const m = document.createElement("span"), names = keys.map((k) => SURVEY.find((x) => x.key === k).title), all = keys.every((k) => done[k]);
-      m.className = "svmark" + (all ? " svdone" : ""); m.setAttribute("role", "img");
-      m.setAttribute("aria-label", `Questions: ${names.join(", ")}${all ? " (answered)" : ""}`);
-      m.innerHTML = `<i></i><b>Questions · ${esc(names.join(" · "))}${all ? " ✓" : ""}</b>`;
+    // one diamond for each card of questions: after its page (those of the table's, after the table's page)
+    const tb = slides.findIndex((x) => x.dataset.kind === "table"), groups = [], put = (i, keys) => { keys = keys.filter((k) => k === "overall" || (k === "inspire" ? researcher() : has[k])); if (i >= 0 && dotOf[i] && keys.length) groups.push([i, keys]); };
+    put(lastOf("1"), ["intro"]); put(lastOf("2"), ["sim"]);
+    if (tb >= 0) { put(tb, LIT); put(tb, ["explore"]); put(tb, END); }
+    else { put(slides.findIndex(kinds.universe), ["universe"]); put(slides.findIndex(kinds.world), ["world"]); put(slides.length - 1, ["explore", ...END]); }
+    for (const [i, keys] of groups.reverse()) {
+      const m = document.createElement("button"), names = keys.map((k) => SURVEY.find((x) => x.key === k).title), all = keys.every((k) => done[k]);
+      m.type = "button"; m.className = "svmark" + (all ? " svdone" : "");
+      m.setAttribute("aria-label", `Questions: ${names.join(", ")}${all ? " (answered: open to change)" : " (open to answer)"}`);
+      m.innerHTML = `<i></i><b>Questions · ${esc(names.join(" · "))}${all ? " ✓ · click to change" : " · click to answer"}</b>`;
+      // pressed: its sets, one after another, now (those answered with their answers, to change; the later answers count)
+      m.addEventListener("click", (e) => { e.stopPropagation(); if (!open) ask(keys); });
       dotOf[i].after(m);
     }
   }
@@ -15524,7 +15566,18 @@ const SURVEY = [
   // while a set is open the deck's keys wait, wherever the focus is
   for (const ev of ["keydown", "keyup"]) document.addEventListener(ev, (e) => { if (open && !(e.target.closest && e.target.closest(".svcard"))) e.stopPropagation(); }, true);
   // several sets one after another, then on
-  const chain = (keys, then) => { const k = keys.find(want); if (!k) return then && then(); ask(k, () => chain(keys.filter((x) => x !== k), then)); };
+  const chain = (keys, then) => ask(keys.filter(want), then); // the sets still wanted, in one card
+  // the table's groups (the owner, 2026-11-21): the literature (Sensing Universe, Sensing World) once all its pages are
+  // ticked, Exploration once all the simulator's explorations are, both on coming back to the table; Research
+  // Inspiration and Overall at “No, end here”, with any set of the table's not answered yet
+  const visited = new Set([slides[cur].id]);
+  const allOpened = (f) => { const ps = slides.filter(f); return ps.length > 0 && ps.every((x) => visited.has(x.id) || (typeof opened !== "undefined" && opened.has(x.id))); };
+  const litPages = (x) => kinds.universe(x) || kinds.world(x), simPages = (x) => levelOf(x) === "3" && x.dataset.home && !x.dataset.kind;
+  const atTable = () => {
+    if (open || slides[cur].dataset.kind !== "table") return;
+    if (allOpened(litPages) && LIT.some(want)) return chain(LIT, atTable);
+    if (allOpened(simPages) && want("explore")) return chain(["explore"]);
+  };
   const finalKeys = () => ["intro", "sim", "universe", "world", "explore"].filter((k) => seen.has(k)).concat(["inspire", "overall"]);
   // → at the end of a part: its questions first
   const fwd1 = forward;
@@ -15554,12 +15607,12 @@ const SURVEY = [
   };
   // the reader says they are done exploring (the table's last question, js/table.js): Exploration first
   // with the Sensing Universe's and the Sensing World's, those the reader opened
-  const atEnd = () => ["universe", "world"].filter((k) => seen.has(k)).concat(["explore"]);
-  for (const b of document.querySelectorAll('[data-end="done"]')) b.addEventListener("click", (e) => { if (open || !atEnd().some(want)) return; e.stopImmediatePropagation(); e.preventDefault(); seen.add("explore"); chain(atEnd(), () => b.click()); }, true);
+  const atEnd = () => [...LIT.filter((k) => seen.has(k)), ...(seen.has("explore") ? ["explore"] : []), ...END];
+  for (const b of document.querySelectorAll('[data-end="done"]')) b.addEventListener("click", (e) => { if (open || !atEnd().some(want)) return; e.stopImmediatePropagation(); e.preventDefault(); chain(atEnd(), () => b.click()); }, true);
   // the last page: the last questions, a moment after it opens
   let lastT = 0;
   const go1 = go;
-  go = function (i, s) { if (unpicked() && i > cur) return nudge(); go1(i, s); const p = partOf(slides[cur]); if (p) seen.add(p); clearTimeout(lastT); if (cur === slides.length - 1) lastT = setTimeout(() => { if (cur === slides.length - 1 && !open) chain(finalKeys(), () => S2S_REMIND()); }, 3000); };
+  go = function (i, s) { if (unpicked() && i > cur) return nudge(); go1(i, s); visited.add(slides[cur].id); const p = partOf(slides[cur]); if (p) seen.add(p); setTimeout(atTable, 700); clearTimeout(lastT); if (cur === slides.length - 1) lastT = setTimeout(() => { if (cur === slides.length - 1 && !open) chain(finalKeys(), () => S2S_REMIND()); }, 3000); };
   { const p = partOf(slides[cur]); if (p) seen.add(p); }
 })();
 </script>

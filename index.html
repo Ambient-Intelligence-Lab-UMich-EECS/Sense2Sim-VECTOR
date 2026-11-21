@@ -15244,7 +15244,8 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
     c.querySelector("button").focus();
   }
   function paint() {
-    if (on() && !introOpen && !introShown && !introSeen()) setTimeout(() => { if (on() && !introSeen()) intro(); }, 0);
+    // (not while the name is asked, js/feedback.js: the card comes once it is given, "s2s-user")
+    if (on() && !introOpen && !introShown && !introSeen() && !document.getElementById("s2suser")) setTimeout(() => { if (on() && !introSeen() && !document.getElementById("s2suser")) intro(); }, 0);
     const me = on(), cert = AUTHOR_CERT && AUTHOR_CERT.scores ? AUTHOR_CERT : null, n = rated(), N = slides.length;
     pill.hidden = !me || !!card; pill.textContent = `Author check · ${n} / ${N}`;
     const src = me ? scores : cert ? cert.scores : null; // an author sees the medal from the start, empty until the first scores
@@ -15295,7 +15296,9 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   const go0 = go; go = function (i, s) { if (card) closeCard(); go0(i, s); paint(); };
   // keys in the card: 1–5 give Accurate, then Quality; the deck's keys stay out of the certificate
   document.addEventListener("keydown", (e) => {
-    if (introOpen) { if (!(e.target.closest && e.target.closest(".auintro"))) { e.stopPropagation(); e.preventDefault(); } return; }
+    // the how-it-goes card open: the deck's keys wait (stopped, never prevented: a field of another card, the name's,
+    // still takes what is typed)
+    if (introOpen) { if (!(e.target.closest && e.target.closest(".auintro"))) e.stopPropagation(); return; }
     if (sheet) { // the certificate open: Esc closes it; the deck's keys wait (the medal's own keys are the medal's: the sheet stops them on their way up)
       if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeCert(); } else if (!sheet.contains(e.target)) e.stopPropagation();
       return;

@@ -1,16 +1,15 @@
 {
   "from": {
-    "file": "/tmp/sw-site-gYq94L/page/index.html",
-    "bytes": 19223568,
-    "sha256": "c12874a113babe64c407c83615b6eb731297a49b018cf84ac96899ff411a633c"
+    "file": "/tmp/sw-site-fcZcyi/page/index.html",
+    "bytes": 19130162,
+    "sha256": "1d6411593b86ab2a8e91b7e61e65cf05a47f91f36c036898102ffc9d3a04d84c"
   },
   "page": {
     "path": "index.html",
-    "bytes": 1700343,
-    "sha256": "0d9e7b08c3a282b8b5576c221db5cd9f9d090f9272e4f7846393be784ebf1ad7"
+    "bytes": 1815453,
+    "sha256": "42ba2af98b94a6dd55317eda58c681edbe27853870b2fab2efa828327e71b924"
   },
   "library": "/nfs/turbo/coe-kesuniot1/senseweaver/library/2026-11-12",
-  "kb": "/nfs/turbo/coe-kesuniot1/senseweaver/trials/magx-a60-2026-11-17/kb/kb.json",
   "files": [
     {
       "path": "library/P02.txt",
@@ -124,8 +123,8 @@
       "type": "image/jpeg",
       "kind": "media",
       "id": "cars",
-      "bytes": 1677338,
-      "sha256": "5bebffe0640cd4fa82247ca93af44c384cbde13f9794181e4aa5e82935dc2f15"
+      "bytes": 1520950,
+      "sha256": "e0802d9f6d80c80c559785f67c820e4580e9a03cf9f17f4591f50414d4289646"
     },
     {
       "path": "media/fast.jpg",
@@ -196,7 +195,6 @@
       "type": "application/json",
       "kind": "kg",
       "id": "exp-kg",
-      "kb": true,
       "bytes": 900788,
       "sha256": "84a373b399f7c68ad7a26da54f79b7f449ee080070f75d431de8553d886af1cb"
     },

@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- the way in: a paper drawn as the page loads (entrance.js), before anything else; intro.js says when the scene is ready -->
+<script src="entrance.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the tab's icon: the SVG where a browser takes one, the picture (made from it by make-icon.mjs) elsewhere -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' gradientUnits='userSpaceOnUse' x1='14' y1='10' x2='50' y2='54'%3E%3Cstop offset='0' stop-color='#d9f272'/%3E%3Cstop offset='.38' stop-color='#6b98ff'/%3E%3Cstop offset='.68' stop-color='#c7a2ff'/%3E%3Cstop offset='1' stop-color='#ff8a5b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='#0d0f13'/%3E%3Cpath d='M44 21C44 9.5 20 9.5 20 22C20 34 44 30 44 42C44 54.5 20 54.5 20 43' fill='none' stroke='url%28#g%29' stroke-width='8.5' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -195,9 +197,9 @@ a.hnode .htext strong::after { content: " ›"; color: var(--ink-3); } a.hnode:h
   <a class="brand" href="#top" id="brand">Sense2Sim</a>
   <!-- (the entrances open a tab of their own: this page stays where the reader left it; AmI, 2026-11-18) -->
   <nav aria-label="Entrances">
-    <a href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/" target="_blank" rel="noopener">Sensing Universe</a>
+    <a href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/pages/universe/index.html" target="_blank" rel="noopener">Sensing Universe</a>
     <a href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/" target="_blank" rel="noopener">3D Assets</a>
-    <a href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/" target="_blank" rel="noopener">Sensing World</a>
+    <a href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/pages/world/index.html#home" target="_blank" rel="noopener">Sensing World</a>
     <a href="../#who" class="navgo" data-in>Start VECTOR ›</a>
   </nav>
 </header>
@@ -236,13 +238,13 @@ a.hnode .htext strong::after { content: " ›"; color: var(--ink-3); } a.hnode:h
         <svg class="howflow" id="howflow" aria-hidden="true"></svg>
         <div class="hnode hpaper" data-n="0"><span class="hmedia hpaperpic"><span class="hsheet"><b>VECTOR: Velocity Based Temperature-field Monitoring with Distributed Acoustic Devices</b><i></i><i></i><i></i><i></i><i></i></span></span>
           <span class="htext"><em>The paper goes in</em><strong>VECTOR</strong><span>its text, its figures and its talk</span></span></div>
-        <a class="gate hnode" id="gate-uni" data-n="1" href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/" target="_blank" rel="noopener">
+        <a class="gate hnode" id="gate-uni" data-n="1" href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/pages/universe/index.html" target="_blank" rel="noopener">
           <span class="gate-media"></span>
           <span class="gate-text htext"><em>1</em><strong>Sensing Universe</strong><span>The paper placed among its related research.</span></span>
         </a>
         <a class="hnode" id="node-assets" data-n="2" href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/" target="_blank" rel="noopener"><span class="hmedia hassets"><img src="../about/assets.jpg" alt=""></span>
           <span class="htext"><em>2</em><strong>Sensing 3D Assets</strong><span>Reusable 3D models of devices, sensors and people, VECTOR's own among them.</span></span></a>
-        <a class="gate hnode" id="gate-world" data-n="3" href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/" target="_blank" rel="noopener">
+        <a class="gate hnode" id="gate-world" data-n="3" href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/pages/world/index.html#home" target="_blank" rel="noopener">
           <span class="gate-media"></span>
           <span class="gate-text htext"><em>3</em><strong>Sensing World</strong><span>The places such papers work in, built with those models.</span></span>
         </a>

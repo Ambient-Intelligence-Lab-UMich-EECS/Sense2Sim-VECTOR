@@ -37,7 +37,7 @@
   if (DATA && DATA.counts && !reduce) {
     try { gl = canvas.getContext("webgl2", { antialias: true, alpha: false, depth: true, powerPreference: "high-performance" }); } catch (e) { gl = null; }
   }
-  if (!gl) { API.ready = true; root.classList.remove("boot"); return; } // the words and the two entrances stay, in the page's flow
+  if (!gl) { API.ready = true; root.classList.remove("boot"); if (window.S2S_ENTRANCE) window.S2S_ENTRANCE.ready(); return; } // the words and the two entrances stay, in the page's flow
 
   // ---------------------------------------------------------------- small maths
   var TAU = Math.PI * 2;
@@ -981,7 +981,7 @@
   try {
     setup();
     root.classList.add("live");
-    requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove("boot"); }); }); // (shown once the scene has drawn)
+    requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove("boot"); if (window.S2S_ENTRANCE) window.S2S_ENTRANCE.ready(); }); }); // (shown once the scene has drawn; the entrance leaves then)
     measure();
     window.addEventListener("resize", measure);
     if (window.ResizeObserver) new ResizeObserver(measure).observe(stage);
@@ -993,7 +993,7 @@
     requestAnimationFrame(function (now) { last = now; frame(now); API.ready = true; });
   } catch (err) {
     // the scene could not be made: the words and the entrances stay
-    root.classList.remove("live"); root.classList.remove("boot");
+    root.classList.remove("live"); root.classList.remove("boot"); if (window.S2S_ENTRANCE) window.S2S_ENTRANCE.ready();
     API.error = String((err && err.message) || err); API.ready = true;
     if (window.console) console.error("Sense2Sim landing:", err);
   }

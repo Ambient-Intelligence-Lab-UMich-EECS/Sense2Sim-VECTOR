@@ -1,13 +1,13 @@
 {
   "from": {
-    "file": "/tmp/sw-site-8N3MvO/page/index.html",
-    "bytes": 19132892,
-    "sha256": "b2f543df33496be635f4b1b98f700a471764315dd2126c1771775626fa85b075"
+    "file": "/tmp/sw-site-UCIlXP/page/index.html",
+    "bytes": 19154902,
+    "sha256": "988c139f28f6fe3371dc0a11c1cdca5dd89adb3da4d7dc39b87f9814ce38659b"
   },
   "page": {
     "path": "index.html",
-    "bytes": 1818183,
-    "sha256": "1218fba4d38a5b4c0264b5b4193f17974cff76151c54245f4818df7734cdb50d"
+    "bytes": 1840617,
+    "sha256": "083a7e4a0d190dea1a354a258b5a629df8300dd7059a71fa54beaf8c95e669da"
   },
   "library": "/nfs/turbo/coe-kesuniot1/senseweaver/library/2026-11-12",
   "files": [
@@ -155,8 +155,8 @@
       "type": "image/png",
       "kind": "media",
       "id": "fig-12",
-      "bytes": 99798,
-      "sha256": "bc6a5cc27fe53514fe616961b379777b0cb903cec13de89cbb07876a9334203d"
+      "bytes": 99479,
+      "sha256": "031d08839986e57569c0b0ec595cb40a06a6d58a0b55ec7e6a8a209692e7a4eb"
     },
     {
       "path": "media/fig-14.png",

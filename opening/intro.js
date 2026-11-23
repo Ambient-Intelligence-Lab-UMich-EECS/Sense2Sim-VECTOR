@@ -982,6 +982,14 @@
     setup();
     root.classList.add("live");
     requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove("boot"); if (window.S2S_ENTRANCE) window.S2S_ENTRANCE.ready(); }); }); // (shown once the scene has drawn; the entrance leaves then)
+    // the simulator fetched while the reader is here (its page as the way in names it, its parts, the 3-D library), a
+    // little at a time once the scene runs, so the opening never waits for it; the browser keeps them for the way in
+    setTimeout(function preload() {
+      var go = document.getElementById("go"), list = [];
+      if (go && go.href) list.push(go.href.split("#")[0]);
+      list = list.concat(window.S2S_PRELOAD || []);
+      list.forEach(function (u, k) { setTimeout(function () { try { var l = document.createElement("link"); l.rel = "prefetch"; l.href = u; if (/\.m?js$/.test(u)) l.as = "script"; document.head.appendChild(l); } catch (e) {} }, 400 * k); });
+    }, 2500);
     measure();
     window.addEventListener("resize", measure);
     if (window.ResizeObserver) new ResizeObserver(measure).observe(stage);
